@@ -5,14 +5,36 @@ import { connectDB } from './config/connection';
 import userModel from './models/event.model';
 import voterModel from './models/voter.model';
 
-// Load environment variables
+import moment from 'moment'; 
+
 import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
 const PORT: number = 3000;
 
-// GraphQL type definitions
+type EventSubject = {
+  title: string;
+};
+
+type EventInput = {
+  event_title: string;
+  event_description: string;
+  attestation_uid: string;
+  num_voters: number;
+  credits_per_voter: number;
+  start_event_date: string;
+  end_event_date: string;
+  created_at: string;
+  event_data: EventSubject[];
+};
+
+type VoterInput = {
+  event_uuid: string;
+  voter_name: string;
+  vote_data: string;
+};
+
 type Event = {
   id: string;
   secret_key: string;
@@ -21,12 +43,20 @@ type Event = {
   attestation_uid: string;
   num_voters: number;
   credits_per_voter: number;
-  start_event_date: Date;
-  end_event_date: Date;
-  created_at: Date;
-  event_data: Record<string, any>;
+  start_event_date: string;
+  end_event_date: string;
+  created_at: string;
+  event_data: EventSubject[];
 };
 
+type Voter = {
+  id: string;
+  event_uuid: string;
+  voter_name: string;
+  vote_data: string;
+};
+
+// GraphQL Schema
 const typeDefs = `
   type Event {
     id: String
@@ -39,7 +69,11 @@ const typeDefs = `
     start_event_date: String
     end_event_date: String
     created_at: String
-    event_data: String
+    event_data: [EventSubject]
+  }
+
+  type EventSubject {
+    title : String
   }
 
   type Voter {
@@ -58,7 +92,11 @@ const typeDefs = `
     start_event_date: String
     end_event_date: String
     created_at: String
-    event_data: String
+    event_data: [EventSubjectInput]
+  }
+
+  input EventSubjectInput {
+    title: String
   }
 
   input VoterInput {
@@ -78,7 +116,7 @@ const typeDefs = `
   }
 `;
 
-// GraphQL resolvers
+// GraphQL Resolvers
 const resolvers = {
   Query: {
     events: async () => {
@@ -89,18 +127,25 @@ const resolvers = {
     },
   },
   Mutation: {
-    createEvent: async (_:any, { event }: { event: Event }) => {
+    createEvent: async (_: any, { event }: { event: EventInput }) => {
       try {
+
         const createdEvent = await userModel.create({
           ...event,
         });
 
-        const voteData = event.event_data || {};
         const voters = Array.from({ length: event.num_voters }, (_, index) => {
+          const vote_data = [];
+          for (const subject of event.event_data) {
+            vote_data.push({
+              title: subject.title,
+              votes: 0,
+            });
+          }
           return {
             event_uuid: createdEvent.id,
             voter_name: `Voter ${index + 1}`,
-            vote_data: JSON.stringify(voteData),
+            vote_data: vote_data,
           };
         });
 
@@ -112,19 +157,26 @@ const resolvers = {
         throw new Error('Failed to create event');
       }
     },
+    createVoter: async (_: any, { voter }: { voter: VoterInput }) => {
+      try {
+        return await voterModel.create({
+          ...voter,
+        });
+      } catch (error) {
+        console.error(error);
+        throw new Error('Failed to create voter');
+      }
+    },
   },
 };
 
+
 const startServer = async () => {
   try {
-    // Connect to the database
-    if (!process.env.MONGO_URI) {
-      return console.error('Missing MONGO_URI!!');
-    }
+
     await connectDB();
     console.log('Connected to DB');
 
-    // Setup basic Express server
     app.get('/', (req: Request, res: Response) => {
       res.send('Hello from Quadratic Voting!');
     });
@@ -133,7 +185,6 @@ const startServer = async () => {
       console.log(`Server is running on Port ${PORT}`);
     });
 
-    // Start ApolloServer
     const server = new ApolloServer({ typeDefs, resolvers });
     const { url } = await startStandaloneServer(server, {
       listen: { port: 4000 },
@@ -143,5 +194,6 @@ const startServer = async () => {
     console.error(error.message);
   }
 };
+
 
 startServer();

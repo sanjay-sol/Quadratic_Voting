@@ -19,15 +19,6 @@ const PORT: number = 3000;
 
 const resolvers = {
   Query: {
-    events: async () => {
-      return await eventModel.find();
-    },
-   getEvent: async (_: any, { id }: { id: string }) => {
-        return await eventModel.findOne({id: id});
-    },
-    voters: async () => {
-      return await voterModel.find();
-    },
     ...eventResolvers.Query,
   },
   Mutation: {

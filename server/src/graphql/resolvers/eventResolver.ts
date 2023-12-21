@@ -1,13 +1,16 @@
-import userModel from '../../models/event.model';
+import eventModel from '../../models/event.model';
 
 const eventResolvers = {
   Query: {
     events: async () => {
-      return await userModel.find();
+      return await eventModel.find();
         },
     getEvent: async (_: any, { id }: { id: string }) => {
-        return await userModel.findOne({id: id});
-    },
+        return await eventModel.findOne({id: id});
+        },
+        getAllEvents: async () => {
+            return await eventModel.find();
+        }
     },
     Mutation: {}
 };

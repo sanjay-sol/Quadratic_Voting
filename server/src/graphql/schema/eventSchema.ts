@@ -50,6 +50,7 @@ export const typeDefs = `
     events: [Event]
     voters: [Voter]
     getEvent(id: ID!): Event
+    getAllEvents: [Event]
   }
 
   type Mutation {

@@ -1,5 +1,5 @@
 export const typeDefs = `
-   type Event {
+  type Event {
     id: String
     secret_key: String
     event_title: String
@@ -14,7 +14,7 @@ export const typeDefs = `
   }
 
   type EventSubject {
-    title : String
+    title: String
   }
 
   type Voter {
@@ -49,11 +49,12 @@ export const typeDefs = `
   type Query {
     events: [Event]
     voters: [Voter]
+    getEvent(id: ID!): Event
   }
 
   type Mutation {
     createEvent(event: EventInput): Event
     createVoter(voter: VoterInput): Voter
   }
-  `;
-  
+`;
+

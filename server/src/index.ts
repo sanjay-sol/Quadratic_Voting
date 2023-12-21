@@ -2,7 +2,7 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import express, { Request, Response } from 'express';
 import { connectDB } from './config/connection';
-import userModel from './models/event.model';
+import eventModel from './models/event.model';
 import voterModel from './models/voter.model';
 // import moment from 'moment';
 import dotenv from 'dotenv';
@@ -20,7 +20,10 @@ const PORT: number = 3000;
 const resolvers = {
   Query: {
     events: async () => {
-      return await userModel.find();
+      return await eventModel.find();
+    },
+   getEvent: async (_: any, { id }: { id: string }) => {
+        return await eventModel.findOne({id: id});
     },
     voters: async () => {
       return await voterModel.find();

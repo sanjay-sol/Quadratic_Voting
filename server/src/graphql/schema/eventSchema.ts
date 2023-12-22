@@ -18,11 +18,17 @@ export const typeDefs = `
   }
 
   type Voter {
-    id: String
-    event_uuid: String
-    voter_name: String
-    vote_data: String
+   id: String
+   event_uuid: String
+   voter_name: String
+   vote_data: [VoteData]
+ }
+
+   type VoteData {
+   title: String
+   votes: Int
   }
+ 
 
   input EventInput {
     event_title: String
@@ -56,6 +62,7 @@ export const typeDefs = `
   type Mutation {
     createEvent(event: EventInput): Event
     createVoter(voter: VoterInput): Voter
+    updateVoteData(id: ID!, name: String, votes: [Int]): Voter
   }
 `;
 

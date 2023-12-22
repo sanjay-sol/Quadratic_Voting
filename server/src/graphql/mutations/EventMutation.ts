@@ -4,7 +4,6 @@ import { EventInput } from '../types/eventTypes';
 
 const createEventMutation = async (_: any, { event }: { event: EventInput }) => {
     try {
-
         const createdEvent = await userModel.create({
           ...event,
         });

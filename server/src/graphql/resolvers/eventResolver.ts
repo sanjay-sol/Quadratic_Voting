@@ -10,9 +10,9 @@ const eventResolvers = {
         },
         getAllEvents: async () => {
             return await eventModel.find();
-        }
+        },
     },
-    Mutation: {}
+    Mutation: { }
 };
 
 export default eventResolvers;

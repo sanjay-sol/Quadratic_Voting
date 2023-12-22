@@ -2,20 +2,17 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import express, { Request, Response } from 'express';
 import { connectDB } from './config/connection';
-import eventModel from './models/event.model';
-import voterModel from './models/voter.model';
 // import moment from 'moment';
 import dotenv from 'dotenv';
 import { typeDefs } from './graphql/schema/eventSchema';
 import eventResolvers from './graphql/resolvers/eventResolver'; 
 import createEventMutation from './graphql/mutations/EventMutation';
+import updateVoteMutation from './graphql/mutations/updateVoteData';
 
 dotenv.config();
 
 const app = express();
 const PORT: number = 3000;
-
-
 
 const resolvers = {
   Query: {
@@ -23,9 +20,11 @@ const resolvers = {
   },
   Mutation: {
     createEvent: createEventMutation,
+    updateVoteData: updateVoteMutation,
     ...eventResolvers.Mutation,
   },
 };
+
 const startServer = async () => {
   try {
     await connectDB();

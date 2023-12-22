@@ -21,11 +21,12 @@ const createEventMutation = async (_: any, { event }: { event: EventInput }) => 
             voter_name: `Voter ${index + 1}`,
             vote_data: vote_data,
           };
-        });
+        }); 
 
-        await voterModel.insertMany(voters);
+      await voterModel.insertMany(voters);
 
-        return createdEvent;
+      return createdEvent;
+
   } catch (error) {
     console.error(error);
     throw new Error('Failed to create event');

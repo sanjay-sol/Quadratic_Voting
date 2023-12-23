@@ -1,18 +1,6 @@
 import voterModel from '../../models/voter.model';
 import { IVoter } from '../types/voterTypes';
-
-type Project = {
-    title: string;
-    votes: number;
-};
-
-type ProjectVotes = Record<string, number>;
-
-type TotalVotes = Record<string, number>;
-
-type QuadraticVotes = Record<string, number>;
-
-type MatchingPoolFactors = Record<string, number>;
+import { Project , ProjectVotes , TotalVotes ,QuadraticVotes , MatchingPoolFactors } from '../types/voterTypes';
 
 const calculateVotes = async (
     _: any,

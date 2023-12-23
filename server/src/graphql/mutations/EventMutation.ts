@@ -18,7 +18,7 @@ const createEventMutation = async (_: any, { event }: { event: EventInput }) => 
           }
           return {
             event_uuid: createdEvent.id,
-            voter_name: `Voter ${index + 1}`,
+            voter_name: "",
             vote_data: vote_data,
           };
         }); 

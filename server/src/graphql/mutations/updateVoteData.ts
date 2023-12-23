@@ -19,7 +19,7 @@ const updateVoteMutation = async (_: any, { id, name, votes }: { id: string; nam
       if (voter._id) {
         await voterModel.findByIdAndUpdate(
         voter._id,{
-            voter_name: name !== '' ? name : voter.voter_name,
+            voter_name: name !== '' ? name : '',
             vote_data: voter.vote_data,
         },
         { new: true }

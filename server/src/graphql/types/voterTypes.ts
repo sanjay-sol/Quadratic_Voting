@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Types } from 'mongoose';
+import {  Document } from 'mongoose';
 
 interface IVoter extends Document {
   id: string;
@@ -11,5 +11,17 @@ type VoterInput = {
   voter_name: String;
   vote_data: number[];
 };
+type Project = {
+    title: string;
+    votes: number;
+};
 
-export { VoterInput , IVoter };
+type ProjectVotes = Record<string, number>;
+
+type TotalVotes = Record<string, number>;
+
+type QuadraticVotes = Record<string, number>;
+
+type MatchingPoolFactors = Record<string, number>;
+
+export { VoterInput , IVoter , Project , ProjectVotes , TotalVotes , QuadraticVotes , MatchingPoolFactors };

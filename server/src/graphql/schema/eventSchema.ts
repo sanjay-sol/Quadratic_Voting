@@ -51,6 +51,11 @@ export const typeDefs = `
     voter_name: String
     vote_data: String
   }
+   type VoteResult {
+    title: String
+    QvRatio: Float
+    totalVotes: Int
+  }
 
   type Query {
     events: [Event]
@@ -58,6 +63,7 @@ export const typeDefs = `
     getEvent(id: ID!): Event
     getAllEvents: [Event]
     getVotersByEventId(id: ID!, secret_key: String!): [Voter]
+    calculateVotes(eventUuid: String!): [VoteResult]
   }
 
   type Mutation {

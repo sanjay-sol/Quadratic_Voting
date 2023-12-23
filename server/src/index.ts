@@ -6,6 +6,7 @@ import { connectDB } from './config/connection';
 import dotenv from 'dotenv';
 import { typeDefs } from './graphql/schema/eventSchema';
 import eventResolvers from './graphql/resolvers/eventResolver'; 
+import voterResolvers from './graphql/resolvers/voterResolver';
 import createEventMutation from './graphql/mutations/EventMutation';
 import updateVoteMutation from './graphql/mutations/updateVoteData';
 
@@ -17,11 +18,13 @@ const PORT: number = 3000;
 const resolvers = {
   Query: {
     ...eventResolvers.Query,
+    ...voterResolvers.Query,
   },
   Mutation: {
     createEvent: createEventMutation,
     updateVoteData: updateVoteMutation,
     ...eventResolvers.Mutation,
+    ...voterResolvers.Mutation,
   },
 };
 

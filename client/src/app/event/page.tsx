@@ -31,7 +31,7 @@ const Page = () => {
 
       {voters.map((voter:any) => (
           <div key={voter.id}>
-              <p>http://localhost:3000/vote?eventId=${id}&voterId={voter.id }</p>
+              <p>http://localhost:3000/vote?eventId={id}&voterId={voter.id }</p>
           {/* <h2>Voter: {voter.voter_name}</h2>
           <ul>
             {voter.vote_data.map((vote:any) => (

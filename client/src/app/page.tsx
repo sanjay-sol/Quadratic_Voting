@@ -4,13 +4,17 @@ import Link from 'next/link'
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex  flex-col items-center justify-between p-24">
       {/* Your existing code */}
-      <button>
-      <Link href="/create">
+      <button className='bg-green-300 text-black p-4 rounded-md'>
+      <a href="/create">
           Go to Create Page
-
-        </Link>
+        </a>
+      </button>
+       <button className='bg-violet-300 text-black p-4 rounded-md m-3'>
+      <a href="/place">
+          Place your Votes
+        </a>
         </button>
     </main>
   )

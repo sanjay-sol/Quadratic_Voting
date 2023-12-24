@@ -2,10 +2,10 @@ import React from 'react';
 
 const Header: React.FC = () => {
     return (
-        <header>
-            <h1>My Next.js App</h1>
+        <header className='flex gap-11'>
+            <h1>Quadratic Voting</h1>
             <nav>
-                <ul>
+                <ul className='flex gap-10'>
                     <li>
                         <a href="/">Home</a>
                     </li>

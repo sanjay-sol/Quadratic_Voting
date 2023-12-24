@@ -9,7 +9,6 @@ const Page = () => {
    const searchParams = useSearchParams();
     const eventId = searchParams.get('eventId');
   const voterId = searchParams.get('voterId');
-    console.log(eventId);
   const { loading: eventLoading, error: eventError, data: eventData } = useQuery(GET_EVENT_QUERY, {
     variables: { getEventId: eventId },
   });
@@ -53,7 +52,7 @@ const Page = () => {
     if (eventError) return <p>Error loading event data</p>;
 
     const  {getEvent}  = eventData;
-    console.log(getEvent)
+
 
   return (
     <div className='flex flex-col'>

@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_EVENT_QUERY } from '../apollo/getEventQuery';
 import { UPDATE_VOTE_MUTATION } from '../apollo/voteMutation';
-
+import { useRouter } from 'next/navigation';
 const VoteForm: React.FC = () => {
+    const router = useRouter();
    const searchParams = useSearchParams();
     const eventId = searchParams.get('eventId');
   const voterId = searchParams.get('voterId');
@@ -41,9 +42,14 @@ const VoteForm: React.FC = () => {
           votes: votes,
         },
       });
+        if (data.updateVoteData) {
+            alert('Vote data updated successfully');
+        }
+        router.push(`/success?eventId=${eventId}&voterId=${voterId}`);
 
-      console.log('Vote data updated:', data.updateVoteData);
-    } catch (error:any) {
+
+    } catch (error: any) {
+        alert('Error updating vote data');
       console.error('Error updating vote data:', error.message);
     }
   };

@@ -90,7 +90,7 @@ const EventForm: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-col justify-center items-center ">
       <form className="max-w-md mx-auto p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
         <h1 className="text-2xl pl-24 font-bold text-gray-800"> Event Details</h1>
         <label className="block mb-2 text-gray-900 font-medium">

@@ -61,19 +61,18 @@ const VoteForm: React.FC = () => {
 
 
   return (
-    <div className='flex flex-col'>
-      <h1>{getEvent?.event_title}</h1>
+    <div className="flex flex-col justify-center items-center">
+      <h1 className='text-4xl font-extrabold text-zinc-300'>{getEvent?.event_title}</h1>
       <p>{getEvent?.event_description}</p>
-     <input className='text-black w-52 p-2 m-4' type="text" value={name} onChange={(e:any)=> setName(e.target.value)} />
-      <form className='flex flex-col justify-center items-center'>
+     <input className='text-black w-52 p-2 m-4 rounded-md' placeholder='Enter Your Name' type="text" value={name} onChange={(e:any)=> setName(e.target.value)} />
+      <form className="max-w-md min-h-full mx-auto p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
         {getEvent?.event_data?.map((event:any, index:any) => (
-            <div key={index} className='flex flex-row gap-2 m-2 p-3 justify-center items-center'>
-               
-            <label>
-                    {event.title} Votes:
-                    
-                    <input
-                        className='text-black p-3 m-2 rounded-md'
+            <div key={index} className='flex flex-row gap-2 m-2 p-3 justify-center items-center'> 
+            <label className="block mb-2 text-gray-900 font-medium">
+                    {event.title}   
+            <br />        
+            <input
+                className="w-auto p-2 mt-1 rounded-md"
                 type="number"
                 value={votes[index]}
                 onChange={(e) => handleVoteChange(index, parseInt(e.target.value, 10))}
@@ -82,10 +81,10 @@ const VoteForm: React.FC = () => {
           </div>
         ))}
               {name ?
-                  <button className='bg-red-200 text-black font-bold p-3 rounded-md w-36' type="button" onClick={handleVoteSubmit}>
+                  <button className='bg-purple-600 text-white font-bold p-3 rounded-md w-full' type="button" onClick={handleVoteSubmit}>
                       Submit Votes
                   </button>
-                  : <button className='bg-red-200 text-black font-bold p-3 rounded-md w-36' type="button" disabled>
+                  : <button className='bg-purple-600 text-white font-bold p-3 rounded-md w-full cursor-not-allowed' type="button" disabled>
                       Enter Name
                   </button> }
       </form>

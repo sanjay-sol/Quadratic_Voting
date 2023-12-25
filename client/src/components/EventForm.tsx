@@ -1,4 +1,3 @@
-"use client";
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useMutation } from '@apollo/client';
 import { CREATE_EVENT } from '../apollo/eventMutation';
@@ -21,7 +20,7 @@ interface EventData {
 }
 
 const EventForm: React.FC = () => {
-    const router = useRouter();
+  const router = useRouter();
   const [eventData, setEventData] = useState<EventData>({
     event_title: '',
     event_description: '',
@@ -30,11 +29,11 @@ const EventForm: React.FC = () => {
     credits_per_voter: 0,
     start_event_date: '',
     end_event_date: '',
-    created_at: '',
+    created_at: new Date().toISOString(),
     event_data: [],
   });
 
-    const [createEvent] = useMutation(CREATE_EVENT);
+  const [createEvent] = useMutation(CREATE_EVENT);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -43,7 +42,6 @@ const EventForm: React.FC = () => {
       [name]: value,
     }));
   };
-    
 
   const handleAddProject = () => {
     setEventData((prevData) => ({
@@ -66,30 +64,35 @@ const EventForm: React.FC = () => {
 
   const handleCreateEvent = async () => {
     try {
+    const startDate = new Date(eventData.start_event_date);
+    const endDate = new Date(eventData.end_event_date);
+
+    if (startDate >= endDate) {
+      return alert('End date must be greater than start date');
+    }
       const { data } = await createEvent({
         variables: {
           event: eventData,
         },
       });
-        
-        if(!data?.createEvent?.id || !data?.createEvent?.secret_key) return alert('Error creating event');
 
-        console.log('Event created:', data.createEvent);
-        console.log('Event created:', data.createEvent?.id);
-        console.log('Event created:', data.createEvent?.secret_key);
-        router.push(`/event?id=${data.createEvent?.id}&secret_key=${data.createEvent?.secret_key}`)
-    } catch (error:any) {
+      if (!data?.createEvent?.id || !data?.createEvent?.secret_key) return alert('Error creating event');
 
-        console.error('Error creating event:', error.message);
-        //TODO : Add an toast alert here
-        // router.push('/error');
+      console.log('Event created:', data.createEvent);
+      console.log('Event created:', data.createEvent?.id);
+      console.log('Event created:', data.createEvent?.secret_key);
+      router.push(`/event?id=${data.createEvent?.id}&secret_key=${data.createEvent?.secret_key}`);
+    } catch (error: any) {
+      console.error('Error creating event:', error.message);
+      //TODO : Add a toast alert here
+      // router.push('/error');
     }
   };
 
-   return (
+  return (
     <div className="flex flex-col justify-center items-center">
       <form className="max-w-md mx-auto p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
-        <h1 className='text-2xl pl-24 font-bold text-gray-800'> Event Details</h1>
+        <h1 className="text-2xl pl-24 font-bold text-gray-800"> Event Details</h1>
         <label className="block mb-2 text-gray-900 font-medium">
           Event Title:
           <input
@@ -143,44 +146,37 @@ const EventForm: React.FC = () => {
         <label className="block mb-2 text-gray-900 font-medium">
           Start Event Date:
           <input
-            type="text"
+            type="datetime-local"
             name="start_event_date"
             className="w-full p-2 mt-1 rounded-md"
             value={eventData.start_event_date}
-            onChange={handleInputChange}
+            onChange={(e) => setEventData({ ...eventData, start_event_date: e.target.value })}
           />
         </label>
         <label className="block mb-2 text-gray-900 font-medium">
           End Event Date:
           <input
-            type="text"
+            type="datetime-local"
             name="end_event_date"
             className="w-full p-2 mt-1 rounded-md"
             value={eventData.end_event_date}
-            onChange={handleInputChange}
+            onChange={(e) => setEventData({ ...eventData, end_event_date: e.target.value })}
           />
         </label>
         <label className="block mb-2 text-gray-900 font-medium">
           Created At:
-          <input
-            type="text"
-            name="created_at"
-            className="w-full p-2 mt-1 rounded-md"
-            value={eventData.created_at}
-            onChange={handleInputChange}
-          />
         </label>
-               <div>
-                   <p>--------------------------------------------</p>
+        <div>
+          <p>--------------------------------------------</p>
           <h3 className="text-black font-semibold underline">Options Data</h3>
           {eventData.event_data.map((project, index) => (
             <div key={index} className="mb-2">
-              <label className='text-black '>
+              <label className="text-black">
                 Option {index + 1}:
                 <input
                   type="text"
-                value={project.title}
-                placeholder='Enter Option Title'
+                  value={project.title}
+                  placeholder="Enter Option Title"
                   onChange={(e) => handleProjectInputChange(index, e)}
                   className="w-full p-2 mt-1 rounded-md"
                 />
@@ -190,16 +186,17 @@ const EventForm: React.FC = () => {
           <button className="bg-green-300 rounded-lg p-2 mt-2 text-black" type="button" onClick={handleAddProject}>
             Add Option
           </button>
-               </div>
-               <p>--------------------------------------------</p>
-            {eventData.event_data.length > 1 ? (
-        <button className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full" type="button" onClick={handleCreateEvent}>
-          Create Event
-                   </button>) : (
-                       <button className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full cursor-not-allowed" type="button" disabled >
-                           Add atleast 2 Options
-                       </button>
-                     )}
+        </div>
+        <p>--------------------------------------------</p>
+        {eventData.event_data.length > 1 ? (
+          <button className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full" type="button" onClick={handleCreateEvent}>
+            Create Event
+          </button>
+        ) : (
+          <button className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full cursor-not-allowed" type="button" disabled>
+            Add at least 2 Options
+          </button>
+        )}
       </form>
     </div>
   );

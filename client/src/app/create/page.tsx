@@ -5,12 +5,10 @@ import React from 'react';
 const Page = () => {
 
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
-        <div>
-            <h1>Create Event</h1>
+        <div className='flex flex-col justify-center items-center pt-3 pb-3'>
             <EventForm />
         </div>
-        </main>
+
     );
 };
 

@@ -86,114 +86,120 @@ const EventForm: React.FC = () => {
     }
   };
 
-  return (
-    <div className='flex flex-col justify-center text-center items-center'>
-      <form className='flex flex-col gap-7 bg-red-300 p-4 rounded-lg' onSubmit={(e: FormEvent) => e.preventDefault()}>
-        {/* Form input fields */}
-        <label>
+   return (
+    <div className="flex flex-col justify-center items-center">
+      <form className="max-w-md mx-auto p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
+        <h1 className='text-2xl pl-24 font-bold text-gray-800'> Event Details</h1>
+        <label className="block mb-2 text-gray-900 font-medium">
           Event Title:
           <input
             type="text"
             name="event_title"
-            className='text-black'
+            className="w-full p-2 mt-1 rounded-md"
             value={eventData.event_title}
             onChange={handleInputChange}
           />
         </label>
-        <label>
+        <label className="block mb-2 text-gray-900 font-medium">
           Event Description:
-            <input
-            className='text-black'
+          <input
+            type="text"
             name="event_description"
+            className="w-full p-2 mt-1 rounded-md"
             value={eventData.event_description}
             onChange={handleInputChange}
           />
         </label>
-        <label>
+        <label className="block mb-2 text-gray-900 font-medium">
           Attestation UID:
-                  <input
-                      className='text-black'
+          <input
             type="text"
             name="attestation_uid"
+            className="w-full p-2 mt-1 rounded-md"
             value={eventData.attestation_uid}
             onChange={handleInputChange}
           />
         </label>
-        <label>
+        <label className="block mb-2 text-gray-900 font-medium">
           Number of Voters:
-                  <input
-                      className='text-black'
+          <input
             type="number"
             name="num_voters"
+            className="w-full p-2 mt-1 rounded-md"
             value={eventData.num_voters}
-            onChange={(e)=> setEventData({...eventData, num_voters: parseInt(e.target.value)}) }
+            onChange={(e) => setEventData({ ...eventData, num_voters: parseInt(e.target.value) })}
           />
         </label>
-        <label>
+        <label className="block mb-2 text-gray-900 font-medium">
           Credits Per Voter:
-            <input
-            className='text-black'
+          <input
             type="number"
             name="credits_per_voter"
+            className="w-full p-2 mt-1 rounded-md"
             value={eventData.credits_per_voter}
-            onChange={(e)=> setEventData({...eventData, credits_per_voter: parseInt(e.target.value)}) }
+            onChange={(e) => setEventData({ ...eventData, credits_per_voter: parseInt(e.target.value) })}
           />
         </label>
-        <label>
+        <label className="block mb-2 text-gray-900 font-medium">
           Start Event Date:
-            <input
-            className='text-black'
+          <input
             type="text"
             name="start_event_date"
+            className="w-full p-2 mt-1 rounded-md"
             value={eventData.start_event_date}
             onChange={handleInputChange}
           />
         </label>
-        <label>
+        <label className="block mb-2 text-gray-900 font-medium">
           End Event Date:
-            <input
-            className='text-black'
+          <input
             type="text"
             name="end_event_date"
+            className="w-full p-2 mt-1 rounded-md"
             value={eventData.end_event_date}
             onChange={handleInputChange}
           />
         </label>
-        <label>
+        <label className="block mb-2 text-gray-900 font-medium">
           Created At:
-            <input
-             className='text-black'
+          <input
             type="text"
             name="created_at"
+            className="w-full p-2 mt-1 rounded-md"
             value={eventData.created_at}
             onChange={handleInputChange}
           />
         </label>
-
-        {/* Event Data (Array of Projects) */}
-        <div>
-          <h3 className='text-black'>Event Data</h3>
+               <div>
+                   <p>--------------------------------------------</p>
+          <h3 className="text-black font-semibold underline">Options Data</h3>
           {eventData.event_data.map((project, index) => (
-            <div key={index}>
-              <label>
-                Project {index + 1}:
+            <div key={index} className="mb-2">
+              <label className='text-black '>
+                Option {index + 1}:
                 <input
-                  className='text-black'
                   type="text"
-                  value={project.title}
+                value={project.title}
+                placeholder='Enter Option Title'
                   onChange={(e) => handleProjectInputChange(index, e)}
+                  className="w-full p-2 mt-1 rounded-md"
                 />
               </label>
             </div>
           ))}
-          <button className='bg-green-200 rounded-lg p-2 text-black' type="button" onClick={handleAddProject}>
-            Add Project
+          <button className="bg-green-300 rounded-lg p-2 mt-2 text-black" type="button" onClick={handleAddProject}>
+            Add Option
           </button>
-        </div>
-
-        <button className='bg-purple-200 rounded-lg p-3 text-black font-bold' type="button" onClick={handleCreateEvent}>
+               </div>
+               <p>--------------------------------------------</p>
+            {eventData.event_data.length > 1 ? (
+        <button className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full" type="button" onClick={handleCreateEvent}>
           Create Event
-        </button>
+                   </button>) : (
+                       <button className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full cursor-not-allowed" type="button" disabled >
+                           Add atleast 2 Options
+                       </button>
+                     )}
       </form>
     </div>
   );

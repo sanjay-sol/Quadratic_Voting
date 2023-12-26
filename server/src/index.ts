@@ -13,7 +13,7 @@ import updateVoteMutation from './graphql/mutations/updateVoteData';
 dotenv.config();
 
 const app = express();
-const PORT: number = 4000;
+const PORT: number = 3000;
 
 const resolvers = {
   Query: {
@@ -32,12 +32,18 @@ const startServer = async () => {
   try {
     await connectDB();
     console.log('Connected to DB');
+   app.get('/', (req: Request, res: Response) => {
+      res.send('Hello from Quadratic Voting!!!');
+    });
 
+    app.listen(PORT, () => {
+      console.log(`Server is running on Port ${PORT}`);
+    });
     const server = new ApolloServer({ typeDefs, resolvers });
     const { url } = await startStandaloneServer(server, {
-      listen: { port: PORT },
+      listen: { port: 4000 },
     });
-     console.log(`GraphQL server is running on port ${PORT}`);
+     console.log(` server is running on port ${PORT}`);
     console.log(`GraphQL Playground: ${url}`);
   } catch (error) {
     console.error(error);

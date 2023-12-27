@@ -24,6 +24,9 @@ const eventResolvers = {
                 console.error(error);
                 return [];
             }
+        },
+        getVoter: async (_: any, { id }: { id: string }) => {
+            return await voterModel.findOne({ id: id });
         }
     },
     Mutation: { }

@@ -64,6 +64,7 @@ export const typeDefs = `
     getAllEvents: [Event]
     getVotersByEventId(id: ID!, secret_key: String!): [Voter]
     calculateVotes(eventUuid: String!): [VoteResult]
+    getVoter(id: ID!): Voter
   }
 
   type Mutation {

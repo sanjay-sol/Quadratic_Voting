@@ -21,6 +21,7 @@ interface EventData {
 
 const EventForm: React.FC = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
   const [eventData, setEventData] = useState<EventData>({
     event_title: '',
     event_description: '',
@@ -64,10 +65,12 @@ const EventForm: React.FC = () => {
 
   const handleCreateEvent = async () => {
     try {
+      setLoading(true);
     const startDate = new Date(eventData.start_event_date);
     const endDate = new Date(eventData.end_event_date);
 
-    if (startDate >= endDate) {
+      if (startDate >= endDate) {
+        setLoading(false);
       return alert('End date must be greater than start date');
     }
       const { data } = await createEvent({
@@ -77,11 +80,12 @@ const EventForm: React.FC = () => {
       });
 
       if (!data?.createEvent?.id || !data?.createEvent?.secret_key) return alert('Error creating event');
-
+      
       console.log('Event created:', data.createEvent);
       console.log('Event created:', data.createEvent?.id);
       console.log('Event created:', data.createEvent?.secret_key);
       router.push(`/event?id=${data.createEvent?.id}&secret_key=${data.createEvent?.secret_key}`);
+      setLoading(false);
     } catch (error: any) {
       console.error('Error creating event:', error.message);
       //TODO : Add a toast alert here
@@ -189,14 +193,32 @@ const EventForm: React.FC = () => {
         </div>
         <p>--------------------------------------------</p>
         {eventData.event_data.length > 1 ? (
-          <button className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full" type="button" onClick={handleCreateEvent}>
-            Create Event
-          </button>
-        ) : (
-          <button className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full cursor-not-allowed" type="button" disabled>
-            Add at least 2 Options
-          </button>
-        )}
+  loading ? (
+    <button
+      className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full" disabled
+      type="button"
+    >
+      Creating Event...
+    </button>
+  ) : (
+    <button
+      className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full"
+      type="button"
+      onClick={handleCreateEvent}
+    >
+      Create Event
+    </button>
+  )
+) : (
+  <button
+    className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full cursor-not-allowed"
+    type="button"
+    disabled
+  >
+    Add at least 2 Options
+  </button>
+)}
+
       </form>
     </div>
   );

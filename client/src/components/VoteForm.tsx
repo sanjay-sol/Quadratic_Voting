@@ -6,6 +6,8 @@ import { GET_EVENT_QUERY } from '../apollo/getEventQuery';
 import { UPDATE_VOTE_MUTATION } from '../apollo/voteMutation';
 import { GET_VOTER_QUERY } from '../apollo/getVoter';
 import { useRouter } from 'next/navigation';
+import ErrorPage from './ErrorPage';
+
 
 const VoteForm: React.FC = () => {
   const router = useRouter();
@@ -15,7 +17,7 @@ const VoteForm: React.FC = () => {
   const { loading: voterLoading, error: voterError, data: voterData } = useQuery(GET_VOTER_QUERY, {
     variables: { getVoterId: voterId },
   });
-  const [votes, setVotes] = useState<any>([]);
+  const [votes, setVotes] = useState<number[]>([]);
   const [name, setName] = useState<string>('');
   const [loading , setLoading] = useState<boolean>(false);
 
@@ -46,11 +48,12 @@ const VoteForm: React.FC = () => {
   const handleVoteSubmit = async () => {
     try {
       setLoading(true);
+      const checkForNullvotes = votes.map(item => (item === null ? 0 : item));
       const { data } = await updateVoteData({
         variables: {
           updateVoteDataId: voterId,
           name: name,
-          votes: votes,
+          votes: checkForNullvotes,
         },
       });
       router.push(`/success?eventId=${voterData?.getVoter?.event_uuid}&voterId=${voterId}`);
@@ -61,6 +64,9 @@ const VoteForm: React.FC = () => {
       console.error('Error updating vote data:', error.message);
     }
   };
+  if (!voterData?.getVoter || voterError) {
+    return <ErrorPage message="No Voter Exists with that ID" />;
+  }
 
   return (
   <div className="flex flex-col justify-center items-center">

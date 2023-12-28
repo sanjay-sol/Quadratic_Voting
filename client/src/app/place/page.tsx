@@ -29,6 +29,7 @@ const Page: React.FC = () => {
       }
     } catch (err) {
       console.error("Error while checking voter:", err);
+      
     }
   };
 

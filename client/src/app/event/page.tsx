@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { GET_VOTERS_QUERY } from '../../apollo/eventQuery';
 import { GET_EVENT_QUERY } from '../../apollo/getEventQuery';
 import { useQuery } from '@apollo/client';
+import ErrorPage from '../error/page';
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -45,7 +46,17 @@ const Page = () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+  if ((voterLoading && voterData?.getVotersByEventId.length == 0) || eventLoading) {
+    return <p>Loading...</p>;
+  }
 
+  if (voterError || eventError) {
+    return <ErrorPage message="Error fetching data" />;
+  }
+
+  if (voterData?.getVotersByEventId?.length == 0) {
+    return <ErrorPage message="No Event Exists with that Pair of ID and secretKey" />;
+  }
   return (
     <div className="flex items-start justify-center min-h-screen">
      
@@ -54,25 +65,27 @@ const Page = () => {
       ) : (
           <div className='flex flex-col items-center p-4'>
             <h1 className='text-4xl font-bold'>Event Details</h1>
-            <div className='flex flex-col justify-center items-center border-2 border-white min-w-40'>
-              <h1>|{eventData?.getEvent?.event_title}</h1>
-              <p>{eventData?.getEvent?.event_description}</p>
+            <div className='flex flex-col justify-center items-center border-2 m-2 border-white min-w-40'>
+              <h1 className='p-2 text-2xl font-semibold'>{eventData?.getEvent?.event_title}</h1>
+              <p className='p-2 text-pretty font-mono'>{eventData?.getEvent?.event_description}</p>
               </div>
-          <hr className="separator" />
-          <h1 className='font-bold text-2xl'>Results Dashboard</h1>
-          <p>{`http://localhost:3000/results?eventId=${id}`}</p>
-          <hr className="separator" />
+            <div className='flex flex-col justify-center items-center border-2 border-white min-w-40'>
+              <h1 className='font-bold text-2xl'>Results Dashboard</h1>
+              <p className='p-2'>{`http://localhost:3000/results?eventId=${id}`}</p>
+            </div>
+             <div className='flex flex-col justify-center items-center border-2 m-2 border-white min-w-40'>
           <h1 className='font-bold text-2xl'>Private Admin Dashboard</h1>
-          <p>{`http://localhost:3000/event?id=${id}&secret_key=${secret_key}`}</p>
-          <hr className="separator" />
+              <p className='p-2'>{`http://localhost:3000/event?id=${id}&secret_key=${secret_key}`}</p>
+            </div>
+            <div className='flex flex-col justify-center items-center border-2 p-3 border-white min-w-40'>
           <h1 className='font-bold text-2xl'>Voter Links</h1>
-          <div className='w-full bg-gray-500 overflow-scroll'>
+          <div className='w-full bg-gray-800 h-64 rounded-md m-3 overflow-y-scroll'>
             {voters.map((voter: any, index) => (
-              <div className='flex flex-col items-start p-2' key={voter.id}>
+              <div className='flex justify-center scrollbar-hide items-baseline p-2 m-3' key={voter.id}>
                 <p>
                   {`http://localhost:3000/vote?voterId=${voter.id}`}
                 </p>
-                <button className='bg-green-500 p-1 m-1 rounded-md' onClick={() => copyToClipboard(`http://localhost:3000/vote?voterId=${voter.id}`, index)}>
+                <button className='bg-gray-500 pl-1 pr-2 ml-2 rounded-md' onClick={() => copyToClipboard(`http://localhost:3000/vote?voterId=${voter.id}`, index)}>
                   {copiedLinks.includes(index) ? <span style={{ marginLeft: '5px' }}>Copied</span> : <span style={{ marginLeft: '5px' }}>Copy Link</span>}
                 </button>
               </div>
@@ -80,8 +93,8 @@ const Page = () => {
           </div>
           <button className='bg-blue-500 p-3 m-3 rounded-md' onClick={downloadLinks}>
             Download Voter Links
-          </button>
-          <hr className="separator" />
+              </button>
+               </div>
           <p>Results display here!!!!!!!!!</p>
         </div>
       )}

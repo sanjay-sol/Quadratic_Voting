@@ -1,15 +1,16 @@
-"use client";
-import EventForm from '../../components/EventForm';
 import React from 'react';
-import Error from '../../components/Error';
-const Page = () => {
+
+interface ErrorProps {
+    message?: string; 
+}
+
+const Page: React.FC<ErrorProps> = ({ message }) => {
+    const defaultText = 'An Unexecpected error occurred'; 
 
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
-        <div>
-            <Error message="Error in creating the Event!!" />
-        </div>
-        </main>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <p>{message ? message : defaultText}</p>
+        </div>                                  
     );
 };
 

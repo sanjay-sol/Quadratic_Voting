@@ -34,7 +34,7 @@ const Page: React.FC = () => {
 
   return (
     <div className='flex flex-col justify-center items-center'>
-      <input className='text-black p-3 rounded-md ' type="text" value={voterId} onChange={(e) => setVoterId(e.target.value)} />
+      <input className='text-black p-3 rounded-md' placeholder='658d03aaaf9b8ab1e10f33f4' type="text" value={voterId} onChange={(e) => setVoterId(e.target.value)} />
       <button className='bg-green-600 p-3 m-3 rounded-md' onClick={handleRedirect}>Submit</button>
     </div>
   );

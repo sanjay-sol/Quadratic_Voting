@@ -21,7 +21,7 @@ const Footer: React.FC = () => {
             <Image src="/download.jpeg" width={48} height={48} alt="GitHub Logo" />
           </a>
           <a href="https://twitter.com/SanjaySirangi">
-            <Image src="/twitter.png" width={48} height={48} alt="Twitter Logo" />
+            <Image src="/twitter.png" width={0} height={0} style={{ width: '30px', height: '30px' }} alt="Twitter Logo" />
           </a>
         </div>
       </div>

@@ -33,7 +33,7 @@ const Page = () => {
   };
 
   const downloadLinks = () => {
-    const linksText = voters.map((voter: any) => `http://localhost:3000/vote?eventId=${id}&voterId=${voter.id}`).join('\n');
+    const linksText = voters.map((voter: any) => `http://localhost:3000/vote?voterId=${voter.id}`).join('\n');
     const blob = new Blob([linksText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
 
@@ -70,9 +70,9 @@ const Page = () => {
             {voters.map((voter: any, index) => (
               <div className='flex flex-col items-start p-2' key={voter.id}>
                 <p>
-                  {`http://localhost:3000/vote?eventId=${id}&voterId=${voter.id}`}
+                  {`http://localhost:3000/vote?voterId=${voter.id}`}
                 </p>
-                <button className='bg-green-500 p-1 m-1 rounded-md' onClick={() => copyToClipboard(`http://localhost:3000/vote?eventId=${id}&voterId=${voter.id}`, index)}>
+                <button className='bg-green-500 p-1 m-1 rounded-md' onClick={() => copyToClipboard(`http://localhost:3000/vote?voterId=${voter.id}`, index)}>
                   {copiedLinks.includes(index) ? <span style={{ marginLeft: '5px' }}>Copied</span> : <span style={{ marginLeft: '5px' }}>Copy Link</span>}
                 </button>
               </div>

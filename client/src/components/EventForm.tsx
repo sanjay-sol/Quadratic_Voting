@@ -65,9 +65,13 @@ const EventForm: React.FC = () => {
 
   const handleCreateEvent = async () => {
     try {
-      setLoading(true);
+    setLoading(true);
     const startDate = new Date(eventData.start_event_date);
-    const endDate = new Date(eventData.end_event_date);
+      const endDate = new Date(eventData.end_event_date);
+      if (eventData.event_title === "" || eventData.event_description === "" || !eventData.num_voters || !eventData.credits_per_voter || !eventData.start_event_date || !eventData.end_event_date) {
+        setLoading(false);
+        return alert('Please fill all the fields');
+      }
 
       if (startDate >= endDate) {
         setLoading(false);

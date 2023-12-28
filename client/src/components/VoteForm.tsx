@@ -4,34 +4,38 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_EVENT_QUERY } from '../apollo/getEventQuery';
 import { UPDATE_VOTE_MUTATION } from '../apollo/voteMutation';
-import { GET_VOTER_QUERY } from '../apollo/getVoter'; // Import the new query
+import { GET_VOTER_QUERY } from '../apollo/getVoter';
 import { useRouter } from 'next/navigation';
 
 const VoteForm: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const eventId = searchParams.get('eventId');
   const voterId = searchParams.get('voterId');
-
-  const { loading: eventLoading, error: eventError, data: eventData } = useQuery(GET_EVENT_QUERY, {
-    variables: { getEventId: eventId },
-  });
 
   const { loading: voterLoading, error: voterError, data: voterData } = useQuery(GET_VOTER_QUERY, {
     variables: { getVoterId: voterId },
   });
   const [votes, setVotes] = useState<any>([]);
   const [name, setName] = useState<string>('');
+  const [loading , setLoading] = useState<boolean>(false);
 
-  const [updateVoteData] = useMutation(UPDATE_VOTE_MUTATION);
+  const [updateVoteData] = useMutation(UPDATE_VOTE_MUTATION, {
+     refetchQueries: [
+      { query: GET_VOTER_QUERY, variables: { getVoterId: voterId } },
+    ],
+  });
 
   useEffect(() => {
-    if (!eventLoading && eventData && eventData.getEvent && voterData && voterData.getVoter) {
-      const initialVotes = voterData.getVoter.vote_data.map((vote: any) => vote.votes) || Array(eventData.getEvent.event_data.length).fill(0);
+    if (!voterLoading && voterData && voterData.getVoter) {
+      const initialVotes = voterData.getVoter.vote_data.map((vote: any) => vote.votes) || Array(voterData.getVoter.vote_data.length).fill(0);
       setVotes(initialVotes);
       setName(voterData.getVoter.voter_name || '');
     }
-  }, [eventData, eventLoading, voterData]);
+  }, [voterLoading, voterData?.getVoter, voterData]);
+
+    const { loading: eventLoading, error: eventError, data: eventData } = useQuery(GET_EVENT_QUERY, {
+    variables: { getEventId: voterData?.getVoter?.event_uuid },
+  });
 
   const handleVoteChange = (index: any, value: any) => {
     const updatedVotes = [...votes];
@@ -41,6 +45,7 @@ const VoteForm: React.FC = () => {
 
   const handleVoteSubmit = async () => {
     try {
+      setLoading(true);
       const { data } = await updateVoteData({
         variables: {
           updateVoteDataId: voterId,
@@ -48,17 +53,14 @@ const VoteForm: React.FC = () => {
           votes: votes,
         },
       });
-      if (data.updateVoteData) {
-        alert('Vote data updated successfully');
-      }
-      router.push(`/success?eventId=${eventId}&voterId=${voterId}`);
+      router.push(`/success?eventId=${voterData?.getVoter?.event_uuid}&voterId=${voterId}`);
+      setLoading(false);
     } catch (error: any) {
       alert('Error updating vote data');
+      setLoading(false);
       console.error('Error updating vote data:', error.message);
     }
   };
-  console.log(eventData?.getEvent?.event_data)
-  console.log(voterData)
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -86,10 +88,10 @@ const VoteForm: React.FC = () => {
             </label>
           </div>
         ))}
-        {name ? (
+        {name ? ( loading ? ( <button className='bg-purple-600 text-white font-bold p-3 rounded-md w-full cursor-not-allowed' type="button" disabled> Updating... </button> ) : (
           <button className='bg-purple-600 text-white font-bold p-3 rounded-md w-full' type="button" onClick={handleVoteSubmit}>
             Submit Votes
-          </button>
+          </button> )
         ) : (
           <button className='bg-purple-600 text-white font-bold p-3 rounded-md w-full cursor-not-allowed' type="button" disabled>
             Enter Name

@@ -82,13 +82,13 @@ const Page = () => {
             {voters.map((voter: any, index) => (
               <div className='flex justify-center scrollbar-hide items-baseline p-2 m-3' key={voter.id}>
                 <p className='text-base'>{`http://localhost:3000/vote?voterId=${voter.id}`}</p>
-                <button className='bg-gray-500 pl-1 pr-2 ml-2 rounded-md'>
+                <button className='bg-gray-500 pl-1 pr-2 ml-2 rounded-md' onClick={() => copyToClipboard(`http://localhost:3000/vote?voterId=${voter.id}`,index)}>
                   {copiedLinks.includes(index) ? <span className='text-sm'>Copied</span> : <span className='text-sm'>Copy Link</span>}
                 </button>
               </div>
             ))}
           </div>
-          <button className='bg-blue-500 p-3 m-3 rounded-md'>
+          <button className='bg-blue-500 p-3 m-3 rounded-md' onClick={downloadLinks}>
             Download Voter Links
           </button>
         </div>

@@ -42,18 +42,38 @@ const VoteForm: React.FC = () => {
   const handleVoteChange = (index: any, value: any) => {
     const updatedVotes = [...votes];
     updatedVotes[index] = value;
+    // TODO : Fix this
+    //! Fix this 
+    for (let i = 0; i < updatedVotes.length; i++) {
+        if (updatedVotes[i] === null || updatedVotes[i] === undefined) {
+          updatedVotes[i] = 0;
+        }
+        if (updatedVotes[i] < 0) {
+          updatedVotes[i] = Math.abs(updatedVotes[i]);
+        }
+      }
     setVotes(updatedVotes);
   };
 
   const handleVoteSubmit = async () => {
     try {
       setLoading(true);
-      const checkForNullvotes = votes.map(item => (item === null ? 0 : item));
+      // const checkForNullvotes = votes.map(item => ((item === null || item === undefined) ? 0 : Math.abs(item)));
+      // TODO : Fix this
+      //! Fix this 
+      for (let i = 0; i < votes.length; i++) {
+        if (votes[i] === null || votes[i] === undefined) {
+          votes[i] = 0;
+        }
+        if (votes[i] < 0) {
+          votes[i] = Math.abs(votes[i]);
+        }
+      }
       const { data } = await updateVoteData({
         variables: {
           updateVoteDataId: voterId,
           name: name,
-          votes: checkForNullvotes,
+          votes: votes,
         },
       });
       router.push(`/success?eventId=${voterData?.getVoter?.event_uuid}&voterId=${voterId}`);
@@ -64,19 +84,27 @@ const VoteForm: React.FC = () => {
       console.error('Error updating vote data:', error.message);
     }
   };
+  if (eventLoading || voterLoading) {
+    return (
+      <div className="flex flex-col justify-center h-screen items-center ">
+        <p>Fetching Vote Data..</p>
+      </div>
+    );
+  }
   if (!voterData?.getVoter || voterError) {
     return <ErrorPage message="No Voter Exists with that ID" />;
   }
 
   return (
-  <div className="flex flex-col justify-center items-center">
+  <div className="flex flex-col justify-center items-center ">
     {(eventLoading || voterLoading) ? (
       <p>Fetching Vote Data...</p>
     ) : (
           <>
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-500 to-pink-500">
-        <h1 className='text-4xl font-extrabold text-zinc-300'>{eventData?.getEvent?.event_title}</h1>
-        <p>{eventData?.getEvent?.event_description}</p>
+          <div className='flex flex-col justify-center items-center border-2 m-2 border-white w-full max-w-4xl'>
+          <h1 className='p-2 text-3xl font-semibold mb-2'>{eventData?.getEvent?.event_title}</h1>
+          <p className='p-2 text-lg font-light'>{eventData?.getEvent?.event_description}</p>
+        </div>
         <input
           className='text-black w-52 p-2 m-4 rounded-md'
           placeholder='Enter Your Name'
@@ -84,14 +112,14 @@ const VoteForm: React.FC = () => {
           value={name}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
         />
-        <form className="max-w-md min-h-full mx-auto p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
+        <form className="w-full max-w-md mx-auto p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
           {eventData?.getEvent?.event_data?.map((event: any, index: number) => (
-            <div key={index} className='flex flex-row gap-2 m-2 p-3 justify-center items-center'>
+            <div key={index} className='flex flex-row gap-2  m-2 p-3 justify-center items-center'>
               <label className="block mb-2 text-gray-900 font-medium" key={index}>
                 {event.title}
                 <br />
                 <input
-                  className="w-auto p-2 mt-1 rounded-md"
+                  className="min-w-96 p-3 mt-1 rounded-md"
                   type="number"
                   value={votes[index]}
                   onChange={(e) => handleVoteChange(index, parseInt(e.target.value, 10))}
@@ -115,7 +143,6 @@ const VoteForm: React.FC = () => {
             </button>
           )}
               </form>
-          </div>
       </>
     )}
   </div>

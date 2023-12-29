@@ -57,49 +57,48 @@ const Page = () => {
   if (voterData?.getVotersByEventId?.length == 0) {
     return <ErrorPage message="No Event Exists with that Pair of ID and secretKey" />;
   }
-  return (
-    <div className="flex items-start justify-center min-h-screen">
-     
-      {eventLoading ? (
-        <p>Loading...</p>
-      ) : (
-          <div className='flex flex-col items-center p-4'>
-            <h1 className='text-4xl font-bold'>Event Details</h1>
-            <div className='flex flex-col justify-center items-center border-2 m-2 border-white min-w-40'>
-              <h1 className='p-2 text-2xl font-semibold'>{eventData?.getEvent?.event_title}</h1>
-              <p className='p-2 text-pretty font-mono'>{eventData?.getEvent?.event_description}</p>
-              </div>
-            <div className='flex flex-col justify-center items-center border-2 border-white min-w-40'>
-              <h1 className='font-bold text-2xl'>Results Dashboard</h1>
-              <p className='p-2'>{`http://localhost:3000/results?eventId=${id}`}</p>
-            </div>
-             <div className='flex flex-col justify-center items-center border-2 m-2 border-white min-w-40'>
-          <h1 className='font-bold text-2xl'>Private Admin Dashboard</h1>
-              <p className='p-2'>{`http://localhost:3000/event?id=${id}&secret_key=${secret_key}`}</p>
-            </div>
-            <div className='flex flex-col justify-center items-center border-2 p-3 border-white min-w-40'>
-          <h1 className='font-bold text-2xl'>Voter Links</h1>
+ return (
+  <div className="flex items-center justify-center min-h-screen">
+    {eventLoading ? (
+      <p>Loading...</p>
+    ) : (
+      <div className='flex flex-col items-center p-4'>
+        <h1 className='text-4xl font-bold mb-4'>Event Details</h1>
+        <div className='flex flex-col justify-center items-center border-2 m-2 border-white w-full max-w-4xl'>
+          <h1 className='p-2 text-3xl font-semibold mb-2'>{eventData?.getEvent?.event_title}</h1>
+          <p className='p-2 text-lg font-light'>{eventData?.getEvent?.event_description}</p>
+        </div>
+        <div className='flex flex-col justify-center items-center border-2 border-white w-full max-w-4xl mt-4'>
+          <h1 className='font-bold text-2xl mb-2 p-2'>Results Dashboard</h1>
+          <p className='p-2 text-base'>{`http://localhost:3000/results?eventId=${id}`}</p>
+        </div>
+        <div className='flex flex-col justify-center items-center border-2 m-2 border-white w-full max-w-4xl mt-4'>
+          <h1 className='font-bold text-2xl mb-2 p-2'>Private Admin Dashboard</h1>
+          <p className='p-2 text-base'>{`http://localhost:3000/event?id=${id}&secret_key=${secret_key}`}</p>
+        </div>
+        <div className='flex flex-col justify-center items-center border-2 p-3 border-white w-full max-w-4xl mt-4'>
+          <h1 className='font-bold text-2xl mb-2'>Voter Links</h1>
           <div className='w-full bg-gray-800 h-64 rounded-md m-3 overflow-y-scroll'>
             {voters.map((voter: any, index) => (
               <div className='flex justify-center scrollbar-hide items-baseline p-2 m-3' key={voter.id}>
-                <p>
-                  {`http://localhost:3000/vote?voterId=${voter.id}`}
-                </p>
-                <button className='bg-gray-500 pl-1 pr-2 ml-2 rounded-md' onClick={() => copyToClipboard(`http://localhost:3000/vote?voterId=${voter.id}`, index)}>
-                  {copiedLinks.includes(index) ? <span style={{ marginLeft: '5px' }}>Copied</span> : <span style={{ marginLeft: '5px' }}>Copy Link</span>}
+                <p className='text-base'>{`http://localhost:3000/vote?voterId=${voter.id}`}</p>
+                <button className='bg-gray-500 pl-1 pr-2 ml-2 rounded-md'>
+                  {copiedLinks.includes(index) ? <span className='text-sm'>Copied</span> : <span className='text-sm'>Copy Link</span>}
                 </button>
               </div>
             ))}
           </div>
-          <button className='bg-blue-500 p-3 m-3 rounded-md' onClick={downloadLinks}>
+          <button className='bg-blue-500 p-3 m-3 rounded-md'>
             Download Voter Links
-              </button>
-               </div>
-          <p>Results display here!!!!!!!!!</p>
+          </button>
         </div>
-      )}
-    </div>
-  );
+        <p className='mt-4 text-lg'>Results display here!!!!!!!!!</p>
+      </div>
+    )}
+  </div>
+);
+
+
 };
 
 export default Page;

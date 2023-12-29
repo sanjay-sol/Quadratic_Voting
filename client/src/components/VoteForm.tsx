@@ -73,7 +73,8 @@ const VoteForm: React.FC = () => {
     {(eventLoading || voterLoading) ? (
       <p>Fetching Vote Data...</p>
     ) : (
-      <>
+          <>
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-500 to-pink-500">
         <h1 className='text-4xl font-extrabold text-zinc-300'>{eventData?.getEvent?.event_title}</h1>
         <p>{eventData?.getEvent?.event_description}</p>
         <input
@@ -113,7 +114,8 @@ const VoteForm: React.FC = () => {
               Enter Name
             </button>
           )}
-        </form>
+              </form>
+          </div>
       </>
     )}
   </div>

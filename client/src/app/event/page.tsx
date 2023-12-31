@@ -34,7 +34,7 @@ const Page = () => {
   };
 
   const downloadLinks = () => {
-    const linksText = voters.map((voter: any) => `http://localhost:3000/vote?voterId=${voter.id}`).join('\n');
+    const linksText = voters.map((voter: any) => `${process.env.NEXT_PUBLIC_CLIENT_API}/vote?voterId=${voter.id}`).join('\n');
     const blob = new Blob([linksText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
 
@@ -70,18 +70,18 @@ const Page = () => {
         </div>
         <div className='flex flex-col justify-center items-center border-2 border-white w-full max-w-4xl mt-4'>
           <h1 className='font-bold text-2xl mb-2 p-2'>Results Dashboard</h1>
-          <p className='p-2 text-base'>{`http://localhost:3000/results?eventId=${id}`}</p>
+          <p className='p-2 text-base'>{`${process.env.NEXT_PUBLIC_CLIENT_API}/results?eventId=${id}`}</p>
         </div>
         <div className='flex flex-col justify-center items-center border-2 m-2 border-white w-full max-w-4xl mt-4'>
           <h1 className='font-bold text-2xl mb-2 p-2'>Private Admin Dashboard</h1>
-          <p className='p-2 text-base'>{`http://localhost:3000/event?id=${id}&secret_key=${secret_key}`}</p>
+          <p className='p-2 text-base'>{`${process.env.NEXT_PUBLIC_CLIENT_API}/event?id=${id}&secret_key=${secret_key}`}</p>
         </div>
         <div className='flex flex-col justify-center items-center border-2 p-3 border-white w-full max-w-4xl mt-4'>
           <h1 className='font-bold text-2xl mb-2'>Voter Links</h1>
           <div className='w-full bg-gray-800 h-64 rounded-md m-3 overflow-y-scroll'>
             {voters.map((voter: any, index) => (
               <div className='flex justify-center scrollbar-hide items-baseline p-2 m-3' key={voter.id}>
-                <p className='text-base'>{`http://localhost:3000/vote?voterId=${voter.id}`}</p>
+                <p className='text-base'>{`${process.env.NEXT_PUBLIC_CLIENT_API}/vote?voterId=${voter.id}`}</p>
                 <button className='bg-gray-500 pl-1 pr-2 ml-2 rounded-md' onClick={() => copyToClipboard(`http://localhost:3000/vote?voterId=${voter.id}`,index)}>
                   {copiedLinks.includes(index) ? <span className='text-sm'>Copied</span> : <span className='text-sm'>Copy Link</span>}
                 </button>

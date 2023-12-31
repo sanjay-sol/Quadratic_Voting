@@ -41,39 +41,20 @@ const VoteForm: React.FC = () => {
 
   const handleVoteChange = (index: any, value: any) => {
     const updatedVotes = [...votes];
-    updatedVotes[index] = value;
-    // TODO : Fix this
-    //! Fix this 
-    for (let i = 0; i < updatedVotes.length; i++) {
-        if (updatedVotes[i] === null || updatedVotes[i] === undefined) {
-          updatedVotes[i] = 0;
-        }
-        if (updatedVotes[i] < 0) {
-          updatedVotes[i] = Math.abs(updatedVotes[i]);
-        }
-      }
+    updatedVotes[index] =  value;
+    console.log(updatedVotes);
     setVotes(updatedVotes);
   };
 
   const handleVoteSubmit = async () => {
     try {
       setLoading(true);
-      // const checkForNullvotes = votes.map(item => ((item === null || item === undefined) ? 0 : Math.abs(item)));
-      // TODO : Fix this
-      //! Fix this 
-      for (let i = 0; i < votes.length; i++) {
-        if (votes[i] === null || votes[i] === undefined) {
-          votes[i] = 0;
-        }
-        if (votes[i] < 0) {
-          votes[i] = Math.abs(votes[i]);
-        }
-      }
+      const checkForNullVotes = votes.map((item) => isNaN(item) ? 0 : Math.abs(item));
       const { data } = await updateVoteData({
         variables: {
           updateVoteDataId: voterId,
           name: name,
-          votes: votes,
+          votes: checkForNullVotes,
         },
       });
       router.push(`/success?eventId=${voterData?.getVoter?.event_uuid}&voterId=${voterId}`);
@@ -94,6 +75,7 @@ const VoteForm: React.FC = () => {
   if (!voterData?.getVoter || voterError) {
     return <ErrorPage message="No Voter Exists with that ID" />;
   }
+  
 
   return (
   <div className="flex flex-col justify-center items-center ">
@@ -121,8 +103,8 @@ const VoteForm: React.FC = () => {
                 <input
                   className="min-w-96 p-3 mt-1 rounded-md"
                   type="number"
-                  value={votes[index]}
-                  onChange={(e) => handleVoteChange(index, parseInt(e.target.value, 10))}
+                  value={isNaN(votes[index]) ? 0 : votes[index] }
+                  onChange={(e) => handleVoteChange(index, parseInt(e.target.value,10))}
                 />
               </label>
             </div>
@@ -132,7 +114,7 @@ const VoteForm: React.FC = () => {
               <button className='bg-purple-600 text-white font-bold p-3 rounded-md w-full cursor-not-allowed' type="button" disabled>
                 Updating...
               </button>
-            ) : (
+                ) : (
               <button className='bg-purple-600 text-white font-bold p-3 rounded-md w-full' type="button" onClick={handleVoteSubmit}>
                 Submit Votes
               </button>
@@ -142,7 +124,7 @@ const VoteForm: React.FC = () => {
               Enter Name
             </button>
           )}
-              </form>
+        </form>
       </>
     )}
   </div>

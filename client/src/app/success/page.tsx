@@ -10,7 +10,7 @@ const Page = () => {
   const router = useRouter();
 
   const handleRedirect = () => {
-    router.push(`/vote?eventId=${eventId}&voterId=${voterId}`);
+    router.push(`/vote?voterId=${voterId}`);
   };
   const handleRedirect2 = () => {
     router.push(`/results?eventId=${eventId}`);

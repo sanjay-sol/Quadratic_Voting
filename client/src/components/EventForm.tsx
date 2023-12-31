@@ -84,10 +84,6 @@ const EventForm: React.FC = () => {
       });
 
       if (!data?.createEvent?.id || !data?.createEvent?.secret_key) return alert('Error creating event');
-      
-      console.log('Event created:', data.createEvent);
-      console.log('Event created:', data.createEvent?.id);
-      console.log('Event created:', data.createEvent?.secret_key);
       router.push(`/event?id=${data.createEvent?.id}&secret_key=${data.createEvent?.secret_key}`);
       setLoading(false);
     } catch (error: any) {

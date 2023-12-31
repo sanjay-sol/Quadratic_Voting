@@ -15,7 +15,7 @@ const Page: React.FC = () => {
 
   const handleRedirect = async () => {
     if (voterId === null || voterId === undefined || voterId === "") {
-      alert("Please enter a Voter ID");
+      alert("Please enter a Voter ID!!!");
       return;
     }
 

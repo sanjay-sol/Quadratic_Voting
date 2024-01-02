@@ -16,6 +16,11 @@ const Page: React.FC = () => {
   const { loading: voterLoading, error: voterError, data: voterData } = useQuery(GET_VOTER_QUERY, {
     variables: { getVoterId: voterId },
   });
+
+    const { loading: eventLoading, error: eventError, data: eventData } = useQuery(GET_EVENT_QUERY, {
+    variables: { getEventId: voterData?.getVoter?.event_uuid },
+    });
+  
   const [votes, setVotes] = useState<number[]>([]);
   const [name, setName] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -26,18 +31,32 @@ const Page: React.FC = () => {
       { query: GET_VOTER_QUERY, variables: { getVoterId: voterId } },
     ],
   });
+    const calculateVotes = (rData : any) => {
+    // Collect array of all user votes per option
+    const votesArr = rData?.vote_data?.map((item : any, _ : any) => item.votes);
+    // Multiple user votes (Quadratic Voting)
+    const votesArrMultiple = votesArr.map((item : any, _ : any) => item * item);
+    // Set votes variable to array
+    setVotes(votesArr);
+    // Set credits to:
+    setCredits(
+      // Maximum votes -
+      eventData?.getEvent?.credits_per_voter -
+        // Sum of all QV multiplied votes
+        votesArrMultiple.reduce((a:any, b:any) => a + b, 0)
+    );
+    };
+  
 
   useEffect(() => {
     if (!voterLoading && voterData && voterData.getVoter) {
       const initialVotes = voterData.getVoter.vote_data.map((vote: any) => vote.votes) || Array(voterData.getVoter.vote_data.length).fill(0);
       setVotes(initialVotes);
       setName(voterData.getVoter.voter_name || '');
+      calculateVotes(voterData?.getVoter);
     }
-  }, [voterLoading, voterData?.getVoter, voterData]);
+  }, [voterLoading, voterData?.getVoter, voterData ]);
 
-  const { loading: eventLoading, error: eventError, data: eventData } = useQuery(GET_EVENT_QUERY, {
-    variables: { getEventId: voterData?.getVoter?.event_uuid },
-  });
 
   useEffect(() => {
     if (!eventLoading && eventData && eventData.getEvent) {
@@ -45,24 +64,32 @@ const Page: React.FC = () => {
     }
   }, [eventLoading, eventData?.getEvent, eventData]);
 
-  // const handleVoteChange = (index: number, value: number) => {
-  //   const updatedVotes = [...votes];
-  //   updatedVotes[index] = value;
-  //   setVotes(updatedVotes);
-  // };
+  const makeVote = (index: number, isIncrement: boolean) => {
+    const tempArr = votes; 
+    isIncrement
+      ? (tempArr[index] = tempArr[index] + 1)
+      : (tempArr[index] = tempArr[index] - 1);
 
-  const increment = (index: number) => {
-    const updatedVotes = [...votes];
-    updatedVotes[index] = isNaN(votes[index]) ? 1 : votes[index] + 1;
-    setVotes(updatedVotes);
-  };
+    setVotes(tempArr); 
 
-  const decrement = (index: number) => {
-    const updatedVotes = [...votes];
-    if (!isNaN(votes[index]) && votes[index] > 0) {
-      updatedVotes[index] = votes[index] - 1;
+    const sumVotes = tempArr
+      .map((num, _) => num * num)
+      .reduce((a, b) => a + b, 0);
+    setCredits(eventData?.getEvent?.credits_per_voter - sumVotes);
+  }
+    const calculateShow = (current : number, increment : boolean) => {
+    const change = increment ? 1 : -1;
+    const canOccur =
+      Math.abs(Math.pow(current, 2) - Math.pow(current + change, 2)) <= credits;
+    if (current === 0 && credits === 0) {
+      return false;
     }
-    setVotes(updatedVotes);
+
+    if (increment) {
+      return current <= 0 ? true : canOccur;
+    } else {
+      return current >= 0 ? true : canOccur;
+    }
   };
 
   const handleVoteSubmit = async () => {
@@ -114,29 +141,65 @@ const Page: React.FC = () => {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
           />
           <div className="w-full max-w-md mx-auto p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
-            {eventData?.getEvent?.event_data?.map((event: any, index: number) => (
+            {/* {eventData?.getEvent?.event_data?.map((event: any, index: number) => (
               <div key={index} className='flex flex-row gap-2 m-2 p-3 justify-center items-center'>
                 <label className="block mb-2 text-gray-900 font-medium" key={index}>
                   {event.title} {"  "} <span className='pl-10 text-gray-800'> credits available : {credits}</span>
                   <br />
                   <div className='flex flex-row justify-center items-baseline'>
-                    <button className='bg-red-300 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md' onClick={() => decrement(index)}>
+                    <button className='bg-red-300 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md' onClick={() => makeVote(votes[index],false)}>
                       -
                     </button>
                     <input
                       className="min-w- p-3 mt-1 rounded-md"
                       type="number"
-                      value={isNaN(votes[index]) ? 0 : votes[index]}
+                      value={votes[index]}
                       disabled
                       // onChange={(e) => handleVoteChange(index, parseInt(e.target.value, 10))}
                     />
-                    <button className='bg-green-300 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md' onClick={() => increment(index)}>
+                    <button className='bg-green-300 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md' onClick={() => makeVote(votes[index],true)}>
                       +
                     </button>
                   </div>
                 </label>
               </div>
-            ))}
+            ))} */}
+              <div className="w-full max-w-md mx-auto p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
+              {eventData?.getEvent?.event_data?.map((option : any, i : any) => {
+                  // Loop through each voteable option
+                  return (
+                      <div key={i} className='flex flex-row gap-2 m-2 p-3 justify-center items-center'>
+                        <div>
+                          <label>Title</label>
+                          <h3>{option.title}</h3>
+                        </div>
+                      <div className="block mb-2 text-gray-900 font-medium">
+                        <label>Votes</label>
+                          Remaining credits: {credits}
+                        <input  className="min-w- p-3 mt-1 rounded-md" type="number" value={votes[i]} disabled />
+                       <div className='flex flex-row justify-center items-baseline'>
+                          {calculateShow(votes[i], false) ? (
+                            <button className='bg-red-400 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md' onClick={() => makeVote(i, false)}>
+                              -
+                            </button>
+                          ) : (
+                            <button className="bg-red-200 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md cursor-not-allowed" disabled>
+                              -
+                            </button>
+                          )}
+                          {calculateShow(votes[i], true) ? (
+                            <button className='bg-green-400 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md' onClick={() => makeVote(i, true)}>+</button>
+                          ) : (
+                            <button className=" bg-green-200 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md cursor-not-allowed" disabled>
+                              +
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                  </div>
+                  );
+              })}
+                </div>
             {name ? (
               loading ? (
                 <button className='bg-purple-600 text-white font-bold p-3 rounded-md w-full cursor-not-allowed' type="button" disabled>

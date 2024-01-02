@@ -7,8 +7,6 @@ import { UPDATE_VOTE_MUTATION } from '../../apollo/voteMutation';
 import { GET_VOTER_QUERY } from '../../apollo/getVoter';
 import { useRouter } from 'next/navigation';
 import ErrorPage from '../../components/ErrorPage';
-import Increment from '../../components/Increment';
-import Decrement from '../../components/Decrement';
 
 const Page: React.FC = () => {
   const router = useRouter();
@@ -23,9 +21,8 @@ const Page: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [credits, setCredits] = useState<number>(0);
 
-
   const [updateVoteData] = useMutation(UPDATE_VOTE_MUTATION, {
-     refetchQueries: [
+    refetchQueries: [
       { query: GET_VOTER_QUERY, variables: { getVoterId: voterId } },
     ],
   });
@@ -38,17 +35,9 @@ const Page: React.FC = () => {
     }
   }, [voterLoading, voterData?.getVoter, voterData]);
 
-    const { loading: eventLoading, error: eventError, data: eventData } = useQuery(GET_EVENT_QUERY, {
+  const { loading: eventLoading, error: eventError, data: eventData } = useQuery(GET_EVENT_QUERY, {
     variables: { getEventId: voterData?.getVoter?.event_uuid },
   });
- 
-  const handleVoteChange = (index: any, value: any) => {
-    const updatedVotes = [...votes];
-    updatedVotes[index] =  value;
-    console.log(updatedVotes);
-    setVotes(updatedVotes);
-  };
-  console.log(eventData?.getEvent?.credits_per_voter);
 
   useEffect(() => {
     if (!eventLoading && eventData && eventData.getEvent) {
@@ -56,6 +45,25 @@ const Page: React.FC = () => {
     }
   }, [eventLoading, eventData?.getEvent, eventData]);
 
+  // const handleVoteChange = (index: number, value: number) => {
+  //   const updatedVotes = [...votes];
+  //   updatedVotes[index] = value;
+  //   setVotes(updatedVotes);
+  // };
+
+  const increment = (index: number) => {
+    const updatedVotes = [...votes];
+    updatedVotes[index] = isNaN(votes[index]) ? 1 : votes[index] + 1;
+    setVotes(updatedVotes);
+  };
+
+  const decrement = (index: number) => {
+    const updatedVotes = [...votes];
+    if (!isNaN(votes[index]) && votes[index] > 0) {
+      updatedVotes[index] = votes[index] - 1;
+    }
+    setVotes(updatedVotes);
+  };
 
   const handleVoteSubmit = async () => {
     try {
@@ -76,9 +84,10 @@ const Page: React.FC = () => {
       console.error('Error updating vote data:', error.message);
     }
   };
+
   if (eventLoading || voterLoading) {
     return (
-      <div className="flex flex-col justify-center h-screen items-center ">
+      <div className="flex flex-col justify-center h-screen items-center">
         <p>Fetching Vote Data...</p>
       </div>
     );
@@ -86,71 +95,68 @@ const Page: React.FC = () => {
   if (!voterData?.getVoter || voterError) {
     return <ErrorPage message="No Voter Exists with that ID!!" />;
   }
-  
 
   return (
-  <div className="flex flex-col justify-center items-center ">
-    {(eventLoading || voterLoading) ? (
-      <p>Fetching Vote Data...</p>
-    ) : (
-          <>
+    <div className="flex flex-col justify-center items-center">
+      {(eventLoading || voterLoading) ? (
+        <p>Fetching Vote Data...</p>
+      ) : (
+        <>
           <div className='flex flex-col justify-center items-center border-2 m-2 border-white w-full max-w-4xl'>
-          <h1 className='p-2 text-3xl font-semibold mb-2'>{eventData?.getEvent?.event_title}</h1>
-          <p className='p-2 text-lg font-light'>{eventData?.getEvent?.event_description}</p>
-        </div>
-        <input
-          className='text-black w-52 p-2 m-4 rounded-md'
-          placeholder='Enter Your Name'
-          type="text"
-          value={name}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-        />
-        <div className="w-full max-w-md mx-auto p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
-                          
-          {eventData?.getEvent?.event_data?.map((event: any, index: number) => (
-            <div key={index} className='flex flex-row gap-2  m-2 p-3 justify-center items-center'>
-              <label className="block mb-2 text-gray-900 font-medium" key={index}>
-                {event.title} {"  "} <span className='pl-10 text-gray-800'> credits available : {credits}</span>
-                <br />
-                <div className='flex flex-row justify-center items-baseline'>
-                 <button className='bg-red-300 pl-4 pr-4 pt-3 pb-3 m-2  text-black rounded-md' >
-                   -
-                  </button>
-                <input
-                  className="min-w- p-3 mt-1 rounded-md"
-                  type="number"
-                    value={isNaN(votes[index]) ? 0 : votes[index] }
-                    // value={count}
-                  onChange={(e) => handleVoteChange(index, parseInt(e.target.value,10))}
-                />
-                  <button onClick={() => alert("on click")} className='bg-green-300 pl-4 pr-4 pt-3 pb-3 m-2  text-black rounded-md'  >
-                    +
+            <h1 className='p-2 text-3xl font-semibold mb-2'>{eventData?.getEvent?.event_title}</h1>
+            <p className='p-2 text-lg font-light'>{eventData?.getEvent?.event_description}</p>
+          </div>
+          <input
+            className='text-black w-52 p-2 m-4 rounded-md'
+            placeholder='Enter Your Name'
+            type="text"
+            value={name}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+          />
+          <div className="w-full max-w-md mx-auto p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
+            {eventData?.getEvent?.event_data?.map((event: any, index: number) => (
+              <div key={index} className='flex flex-row gap-2 m-2 p-3 justify-center items-center'>
+                <label className="block mb-2 text-gray-900 font-medium" key={index}>
+                  {event.title} {"  "} <span className='pl-10 text-gray-800'> credits available : {credits}</span>
+                  <br />
+                  <div className='flex flex-row justify-center items-baseline'>
+                    <button className='bg-red-300 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md' onClick={() => decrement(index)}>
+                      -
+                    </button>
+                    <input
+                      className="min-w- p-3 mt-1 rounded-md"
+                      type="number"
+                      value={isNaN(votes[index]) ? 0 : votes[index]}
+                      disabled
+                      // onChange={(e) => handleVoteChange(index, parseInt(e.target.value, 10))}
+                    />
+                    <button className='bg-green-300 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md' onClick={() => increment(index)}>
+                      +
+                    </button>
+                  </div>
+                </label>
+              </div>
+            ))}
+            {name ? (
+              loading ? (
+                <button className='bg-purple-600 text-white font-bold p-3 rounded-md w-full cursor-not-allowed' type="button" disabled>
+                  Updating...
                 </button>
-                </div>
-              </label>
-            </div>
-          ))}
-          {name ? (
-            loading ? (
+              ) : (
+                <button className='bg-purple-600 text-white font-bold p-3 rounded-md w-full' type="button" onClick={handleVoteSubmit}>
+                  Submit Votes
+                </button>
+              )
+            ) : (
               <button className='bg-purple-600 text-white font-bold p-3 rounded-md w-full cursor-not-allowed' type="button" disabled>
-                Updating...
+                Enter Name
               </button>
-                ) : (
-              <button className='bg-purple-600 text-white font-bold p-3 rounded-md w-full' type="button" onClick={handleVoteSubmit}>
-                Submit Votes
-              </button>
-            )
-          ) : (
-            <button className='bg-purple-600 text-white font-bold p-3 rounded-md w-full cursor-not-allowed' type="button" disabled>
-              Enter Name
-            </button>
-          )}
-        </div>
-      </>
-    )}
-  </div>
-);
-
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
 };
 
 export default Page;

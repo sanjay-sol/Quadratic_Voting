@@ -1,7 +1,7 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { useMutation } from '@apollo/client';
-import { CREATE_EVENT } from '../apollo/eventMutation';
-import { useRouter } from 'next/navigation';
+import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useMutation } from "@apollo/client";
+import { CREATE_EVENT } from "../apollo/eventMutation";
+import { useRouter } from "next/navigation";
 
 interface Project {
   title: string;
@@ -15,7 +15,7 @@ interface EventData {
   credits_per_voter: number;
   start_event_date: string;
   end_event_date: string;
-  created_at: string;
+created_at: string;
   event_data: Project[];
 }
 
@@ -23,13 +23,13 @@ const EventForm: React.FC = () => {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const [eventData, setEventData] = useState<EventData>({
-    event_title: '',
-    event_description: '',
-    attestation_uid: '',
+    event_title: "",
+    event_description: "",
+    attestation_uid: "",
     num_voters: 0,
     credits_per_voter: 0,
-    start_event_date: '',
-    end_event_date: '',
+    start_event_date: "",
+    end_event_date: "",
     created_at: new Date().toISOString(),
     event_data: [],
   });
@@ -47,11 +47,14 @@ const EventForm: React.FC = () => {
   const handleAddProject = () => {
     setEventData((prevData) => ({
       ...prevData,
-      event_data: [...prevData.event_data, { title: '' }],
+      event_data: [...prevData.event_data, { title: "" }],
     }));
   };
 
-  const handleProjectInputChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
+  const handleProjectInputChange = (
+    index: number,
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
     const { value } = e.target;
     setEventData((prevData) => {
       const updatedEventData = [...prevData.event_data];
@@ -65,29 +68,39 @@ const EventForm: React.FC = () => {
 
   const handleCreateEvent = async () => {
     try {
-    setLoading(true);
-    const startDate = new Date(eventData.start_event_date);
+      setLoading(true);
+      const startDate = new Date(eventData.start_event_date);
       const endDate = new Date(eventData.end_event_date);
-      if (eventData.event_title === "" || eventData.event_description === "" || !eventData.num_voters || !eventData.credits_per_voter || !eventData.start_event_date || !eventData.end_event_date) {
+      if (
+        eventData.event_title === "" ||
+        eventData.event_description === "" ||
+        !eventData.num_voters ||
+        !eventData.credits_per_voter ||
+        !eventData.start_event_date ||
+        !eventData.end_event_date
+      ) {
         setLoading(false);
-        return alert('Please fill all the fields');
+        return alert("Please fill all the fields");
       }
 
       if (startDate >= endDate) {
         setLoading(false);
-      return alert('End date must be greater than start date');
-    }
+        return alert("End date must be greater than start date");
+      }
       const { data } = await createEvent({
         variables: {
           event: eventData,
         },
       });
 
-      if (!data?.createEvent?.id || !data?.createEvent?.secret_key) return alert('Error creating event');
-      router.push(`/event?id=${data.createEvent?.id}&secret_key=${data.createEvent?.secret_key}`);
+      if (!data?.createEvent?.id || !data?.createEvent?.secret_key)
+        return alert("Error creating event");
+      router.push(
+        `/event?id=${data.createEvent?.id}&secret_key=${data.createEvent?.secret_key}`
+      );
       setLoading(false);
     } catch (error: any) {
-      console.error('Error creating event:', error.message);
+      console.error("Error creating event:", error.message);
       //TODO : Add a toast alert here
       // router.push('/error');
     }
@@ -96,7 +109,10 @@ const EventForm: React.FC = () => {
   return (
     <div className="flex flex-col justify-center items-center ">
       <form className="max-w-md mx-auto p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
-        <h1 className="text-2xl pl-24 font-bold text-gray-800"> Event Details</h1>
+        <h1 className="text-2xl pl-24 font-bold text-gray-800">
+          {" "}
+          Event Details
+        </h1>
         <label className="block mb-2 text-gray-900 font-medium">
           Event Title:
           <input
@@ -134,7 +150,12 @@ const EventForm: React.FC = () => {
             name="num_voters"
             className="w-full p-2 mt-1 rounded-md"
             value={eventData.num_voters}
-            onChange={(e) => setEventData({ ...eventData, num_voters: parseInt(e.target.value) })}
+            onChange={(e) =>
+              setEventData({
+                ...eventData,
+                num_voters: parseInt(e.target.value),
+              })
+            }
           />
         </label>
         <label className="block mb-2 text-gray-900 font-medium">
@@ -144,7 +165,12 @@ const EventForm: React.FC = () => {
             name="credits_per_voter"
             className="w-full p-2 mt-1 rounded-md"
             value={eventData.credits_per_voter}
-            onChange={(e) => setEventData({ ...eventData, credits_per_voter: parseInt(e.target.value) })}
+            onChange={(e) =>
+              setEventData({
+                ...eventData,
+                credits_per_voter: parseInt(e.target.value),
+              })
+            }
           />
         </label>
         <label className="block mb-2 text-gray-900 font-medium">
@@ -154,7 +180,9 @@ const EventForm: React.FC = () => {
             name="start_event_date"
             className="w-full p-2 mt-1 rounded-md"
             value={eventData.start_event_date}
-            onChange={(e) => setEventData({ ...eventData, start_event_date: e.target.value })}
+            onChange={(e) =>
+              setEventData({ ...eventData, start_event_date: e.target.value })
+            }
           />
         </label>
         <label className="block mb-2 text-gray-900 font-medium">
@@ -164,7 +192,9 @@ const EventForm: React.FC = () => {
             name="end_event_date"
             className="w-full p-2 mt-1 rounded-md"
             value={eventData.end_event_date}
-            onChange={(e) => setEventData({ ...eventData, end_event_date: e.target.value })}
+            onChange={(e) =>
+              setEventData({ ...eventData, end_event_date: e.target.value })
+            }
           />
         </label>
         <label className="block mb-2 text-gray-900 font-medium">
@@ -187,38 +217,42 @@ const EventForm: React.FC = () => {
               </label>
             </div>
           ))}
-          <button className="bg-green-300 rounded-lg p-2 mt-2 text-black" type="button" onClick={handleAddProject}>
+          <button
+            className="bg-green-300 rounded-lg p-2 mt-2 text-black"
+            type="button"
+            onClick={handleAddProject}
+          >
             Add Option
           </button>
         </div>
         <p>--------------------------------------------</p>
         {eventData.event_data.length > 1 ? (
-  loading ? (
-    <button
-      className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full" disabled
-      type="button"
-    >
-      Creating Event...
-    </button>
-  ) : (
-    <button
-      className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full"
-      type="button"
-      onClick={handleCreateEvent}
-    >
-      Create Event
-    </button>
-  )
-) : (
-  <button
-    className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full cursor-not-allowed"
-    type="button"
-    disabled
-  >
-    Add at least 2 Options
-  </button>
-)}
-
+          loading ? (
+            <button
+              className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full"
+              disabled
+              type="button"
+            >
+              Creating Event...
+            </button>
+          ) : (
+            <button
+              className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full"
+              type="button"
+              onClick={handleCreateEvent}
+            >
+              Create Event
+            </button>
+          )
+        ) : (
+          <button
+            className="bg-purple-800 rounded-lg p-3 text-white font-bold mt-4 w-full cursor-not-allowed"
+            type="button"
+            disabled
+          >
+            Add at least 2 Options
+          </button>
+        )}
       </form>
     </div>
   );

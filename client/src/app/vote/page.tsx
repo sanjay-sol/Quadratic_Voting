@@ -13,12 +13,24 @@ const Page: React.FC = () => {
   const searchParams = useSearchParams();
   const voterId = searchParams.get("voterId");
 
+  const [votes, setVotes] = useState<number[]>([]);
+  const [name, setName] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [credits, setCredits] = useState<number>(0);
+  const [newEventData, setNewEventData] = useState<any>({});
+
   const {
     loading: voterLoading,
     error: voterError,
     data: voterData,
   } = useQuery(GET_VOTER_QUERY, {
     variables: { getVoterId: voterId },
+  });
+
+  const [updateVoteData] = useMutation(UPDATE_VOTE_MUTATION, {
+    refetchQueries: [
+      { query: GET_VOTER_QUERY, variables: { getVoterId: voterId } },
+    ],
   });
 
   const {
@@ -29,62 +41,48 @@ const Page: React.FC = () => {
     variables: { getEventId: voterData?.getVoter?.event_uuid },
   });
 
-  const [votes, setVotes] = useState<number[]>([]);
-  const [name, setName] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [credits, setCredits] = useState<number>(0);
-
-  const [updateVoteData] = useMutation(UPDATE_VOTE_MUTATION, {
-    refetchQueries: [
-      { query: GET_VOTER_QUERY, variables: { getVoterId: voterId } },
-    ],
-  });
-
-     
-  
   const calculateVotes = async (rData: any) => {
-    const votesArr = await rData?.vote_data?.map((item: any, _: any) => item.votes);
-    const votesArrMultiple = await  votesArr.map((item: any, _: any) => item * item);
+    const votesArr = await rData?.vote_data?.map(
+      (item: any, _: any) => item.votes
+    );
+    const votesArrMultiple = await votesArr.map(
+      (item: any, _: any) => item * item
+    );
     setVotes(votesArr);
 
-    console.log("votesArrMultiple", votesArrMultiple);  
+    console.log("votesArrMultiple", votesArrMultiple);
     setCredits(
-      eventData?.getEvent?.credits_per_voter -
+      (await eventData?.getEvent?.credits_per_voter) -
         votesArrMultiple.reduce((a: any, b: any) => a + b, 0)
     );
   };
 
-
   useEffect(() => {
-    // const fetchData = async () => {
-      if (!eventLoading && eventData && eventData.getEvent) {
-        setCredits(eventData.getEvent.credits_per_voter);
+    const fetchData = async () => {
+      if (!voterLoading && voterData && voterData.getVoter) {
+        const initialVotes =
+          voterData.getVoter.vote_data.map((vote: any) => vote.votes) ||
+          Array(voterData.getVoter.vote_data.length).fill(0);
+        setVotes(initialVotes);
+        setName(voterData.getVoter.voter_name || "");
+        console.log(voterData?.getVoter);
+        await calculateVotes(voterData?.getVoter);
       }
-    // }
-    // fetchData();
-  }, [eventLoading, eventData?.getEvent, eventData]);
+    };
+
+    fetchData();
+  }, [
+    voterLoading,
+    voterData?.getVoter,
+    voterData,
+    eventData?.getEvent,
+    eventData,
+    eventLoading,
+  ]);
 
   useEffect(() => {
-  const fetchData = async () => {
-    if (!voterLoading && voterData && voterData.getVoter) {
-      const initialVotes =
-        voterData.getVoter.vote_data.map((vote: any) => vote.votes) ||
-        Array(voterData.getVoter.vote_data.length).fill(0);
-      setVotes(initialVotes);
-      setName(voterData.getVoter.voter_name || "");
-      console.log(voterData?.getVoter);
-      await calculateVotes(voterData?.getVoter); 
-    }
-  };
-
-  fetchData();
-}, [voterLoading, voterData?.getVoter, voterData]);
-
-
-
-  useEffect(() => {
-    console.log("voterData", voterData)
-  },[voterData])
+    console.log("voterData", voterData);
+  }, [voterData]);
 
   const makeVote = (index: number, isIncrement: boolean) => {
     const tempArr = votes;
@@ -155,7 +153,7 @@ const Page: React.FC = () => {
         <p>Fetching Vote Data...</p>
       ) : (
         <>
-          <div className="flex flex-col justify-center items-center border-2 m-2 border-white w-full max-w-4xl">
+          <div className="flex flex-col justify-center items-center border-2 m-2  border-white w-full max-w-4xl">
             <h1 className="p-2 text-3xl font-semibold mb-2">
               {eventData?.getEvent?.event_title}
             </h1>
@@ -163,71 +161,46 @@ const Page: React.FC = () => {
               {eventData?.getEvent?.event_description}
             </p>
           </div>
-          <input
-            className="text-black w-52 p-2 m-4 rounded-md"
-            placeholder="Enter Your Name"
-            type="text"
-            value={name}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setName(e.target.value)
-            }
-          />
-          <div className="w-full max-w-md mx-auto p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
-            {/* {eventData?.getEvent?.event_data?.map((event: any, index: number) => (
-              <div key={index} className='flex flex-row gap-2 m-2 p-3 justify-center items-center'>
-                <label className="block mb-2 text-gray-900 font-medium" key={index}>
-                  {event.title} {"  "} <span className='pl-10 text-gray-800'> credits available : {credits}</span>
-                  <br />
-                  <div className='flex flex-row justify-center items-baseline'>
-                    <button className='bg-red-300 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md' onClick={() => makeVote(votes[index],false)}>
-                      -
-                    </button>
-                    <input
-                      className="min-w- p-3 mt-1 rounded-md"
-                      type="number"
-                      value={votes[index]}
-                      disabled
-                      // onChange={(e) => handleVoteChange(index, parseInt(e.target.value, 10))}
-                    />
-                    <button className='bg-green-300 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md' onClick={() => makeVote(votes[index],true)}>
-                      +
-                    </button>
-                  </div>
-                </label>
-              </div>
-            ))} */}
-            <div className="w-full max-w-md mx-auto p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
+
+          <div className="w-full max-w-md mx-auto p-6 bg-gradient-to-r mb-3 from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
+              <div className="flex flex-col ">
+              <label className="text-lg font-bold text-slate-800 pl-4"> Enter Your Name</label>
+              <input
+                className="text-black text-center w-auto p-2 m-4 rounded-md "
+                placeholder="Enter Your Name"
+                type="text"
+                value={name}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setName(e.target.value)
+                }
+              />
               {eventData?.getEvent?.event_data?.map((option: any, i: any) => {
-                // Loop through each voteable option
                 return (
                   <div
                     key={i}
-                    className="flex flex-row gap-2 m-2 p-3 justify-center items-center"
+                    className="flex flex-col gap-2 m-2 p-3 justify-center items-center"
                   >
-                    <div>
-                      <label>Title</label>
-                      <h3>{option.title}</h3>
-                    </div>
-                    <div className="block mb-2 text-gray-900 font-medium">
-                      <label>Votes</label>
-                      Remaining credits: {credits}
+                    <h3 className="text-xl font-semibold ">{option.title}</h3>
+                    <div className="block mb-2 text-gray-700 font-medium ">
+                      Remaining credits:{" "}
+                      <span className="text-gray-900 underline">{credits}</span>
                       <input
-                        className="min-w- p-3 mt-1 rounded-md"
+                        className="min-w-full p-3 mt-1 rounded-md text-center text-black"
                         type="number"
                         value={votes[i]}
                         disabled
                       />
-                      <div className="flex flex-row justify-center items-baseline">
+                      <div className="flex flex-row justify-evenly">
                         {calculateShow(votes[i], false) ? (
                           <button
-                            className="bg-red-500 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md"
+                            className="bg-red-500 w-3/4 p-2 mt-2 mr-2  text-black rounded-md"
                             onClick={() => makeVote(i, false)}
                           >
                             -
                           </button>
                         ) : (
                           <button
-                            className="bg-red-200 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md cursor-not-allowed"
+                            className="bg-red-200 w-3/4 p-2 mt-2 mr-2  text-black rounded-md cursor-not-allowed"
                             disabled
                           >
                             -
@@ -235,14 +208,14 @@ const Page: React.FC = () => {
                         )}
                         {calculateShow(votes[i], true) ? (
                           <button
-                            className="bg-green-500 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md"
+                            className="bg-green-500 w-3/4 p-2 mt-2  text-black rounded-md"
                             onClick={() => makeVote(i, true)}
                           >
                             +
                           </button>
                         ) : (
                           <button
-                            className=" bg-green-200 pl-4 pr-4 pt-3 pb-3 m-2 text-black rounded-md cursor-not-allowed"
+                            className=" bg-green-200 w-3/4 p-2 mt-2 text-black rounded-md cursor-not-allowed"
                             disabled
                           >
                             +

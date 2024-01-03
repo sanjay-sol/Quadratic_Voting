@@ -7,6 +7,7 @@ import { UPDATE_VOTE_MUTATION } from "../../apollo/voteMutation";
 import { GET_VOTER_QUERY } from "../../apollo/getVoter";
 import { useRouter } from "next/navigation";
 import ErrorPage from "../../components/ErrorPage";
+import { GetVoter, VoteData, eventData } from "../../types/voterData";
 
 const Page: React.FC = () => {
   const router = useRouter();
@@ -17,7 +18,6 @@ const Page: React.FC = () => {
   const [name, setName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [credits, setCredits] = useState<number>(0);
-  const [newEventData, setNewEventData] = useState<any>({});
 
   const {
     loading: voterLoading,
@@ -41,19 +41,17 @@ const Page: React.FC = () => {
     variables: { getEventId: voterData?.getVoter?.event_uuid },
   });
 
-  const calculateVotes = async (rData: any) => {
-    const votesArr = await rData?.vote_data?.map(
-      (item: any, _: any) => item.votes
+  const calculateVotes = async (rData: GetVoter) => {
+    const votesArr = rData.vote_data.map(
+      (item: VoteData, _: any) => item.votes
     );
-    const votesArrMultiple = await votesArr.map(
-      (item: any, _: any) => item * item
+    const votesArrMultiple = votesArr.map(
+      (item: number, _: any) => item * item
     );
     setVotes(votesArr);
-
-    console.log("votesArrMultiple", votesArrMultiple);
     setCredits(
       (await eventData?.getEvent?.credits_per_voter) -
-        votesArrMultiple.reduce((a: any, b: any) => a + b, 0)
+        votesArrMultiple.reduce((a: number, b: number) => a + b, 0)
     );
   };
 
@@ -61,11 +59,10 @@ const Page: React.FC = () => {
     const fetchData = async () => {
       if (!voterLoading && voterData && voterData.getVoter) {
         const initialVotes =
-          voterData.getVoter.vote_data.map((vote: any) => vote.votes) ||
+          voterData.getVoter.vote_data.map((vote: VoteData) => vote.votes) ||
           Array(voterData.getVoter.vote_data.length).fill(0);
         setVotes(initialVotes);
-        setName(voterData.getVoter.voter_name || "");
-        console.log(voterData?.getVoter);
+        setName(voterData.getVoter.voter_name);
         await calculateVotes(voterData?.getVoter);
       }
     };
@@ -75,8 +72,8 @@ const Page: React.FC = () => {
     voterLoading,
     voterData?.getVoter,
     voterData,
-    eventData?.getEvent,
     eventData,
+    eventData?.getEvent,
     eventLoading,
   ]);
 
@@ -146,7 +143,7 @@ const Page: React.FC = () => {
   if (!voterData?.getVoter || voterError) {
     return <ErrorPage message="No Voter Exists with that ID!!" />;
   }
-
+  console.log("#########", voterData?.getVoter);
   return (
     <div className="flex flex-col justify-center items-center">
       {eventLoading || voterLoading ? (
@@ -163,71 +160,82 @@ const Page: React.FC = () => {
           </div>
 
           <div className="w-full max-w-md mx-auto p-6 bg-gradient-to-r mb-3 from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
-              <div className="flex flex-col ">
-              <label className="text-lg font-bold text-slate-800 pl-4"> Enter Your Name</label>
+            <div className="flex flex-col ">
+              <label className="text-lg font-bold text-slate-800 pl-4">
+                {" "}
+                Enter Your Name
+              </label>
               <input
                 className="text-black text-center w-auto p-2 m-4 rounded-md "
                 placeholder="Enter Your Name"
                 type="text"
-                value={name}
+                value={
+                  voterData?.getVoter?.voter_name !== ""
+                    ? voterData.getVoter.voter_name
+                    : name
+                }
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setName(e.target.value)
                 }
               />
-              {eventData?.getEvent?.event_data?.map((option: any, i: any) => {
-                return (
-                  <div
-                    key={i}
-                    className="flex flex-col gap-2 m-2 p-3 justify-center items-center"
-                  >
-                    <h3 className="text-xl font-semibold ">{option.title}</h3>
-                    <div className="block mb-2 text-gray-700 font-medium ">
-                      Remaining credits:{" "}
-                      <span className="text-gray-900 underline">{credits}</span>
-                      <input
-                        className="min-w-full p-3 mt-1 rounded-md text-center text-black"
-                        type="number"
-                        value={votes[i]}
-                        disabled
-                      />
-                      <div className="flex flex-row justify-evenly">
-                        {calculateShow(votes[i], false) ? (
-                          <button
-                            className="bg-red-500 w-3/4 p-2 mt-2 mr-2  text-black rounded-md"
-                            onClick={() => makeVote(i, false)}
-                          >
-                            -
-                          </button>
-                        ) : (
-                          <button
-                            className="bg-red-200 w-3/4 p-2 mt-2 mr-2  text-black rounded-md cursor-not-allowed"
-                            disabled
-                          >
-                            -
-                          </button>
-                        )}
-                        {calculateShow(votes[i], true) ? (
-                          <button
-                            className="bg-green-500 w-3/4 p-2 mt-2  text-black rounded-md"
-                            onClick={() => makeVote(i, true)}
-                          >
-                            +
-                          </button>
-                        ) : (
-                          <button
-                            className=" bg-green-200 w-3/4 p-2 mt-2 text-black rounded-md cursor-not-allowed"
-                            disabled
-                          >
-                            +
-                          </button>
-                        )}
+              {eventData?.getEvent?.event_data?.map(
+                (option: eventData, i: number) => {
+                  return (
+                    <div
+                      key={i}
+                      className="flex flex-col gap-2 m-2 p-3 justify-center items-center"
+                    >
+                      <h3 className="text-xl font-semibold ">{option.title}</h3>
+                      <div className="block mb-2 text-gray-700 font-medium ">
+                        Remaining credits:{" "}
+                        <span className="text-gray-900 underline">
+                          {credits}
+                        </span>
+                        <input
+                          className="min-w-full p-3 mt-1 rounded-md text-center text-black"
+                          type="number"
+                          value={votes[i]}
+                          disabled
+                        />
+                        <div className="flex flex-row justify-evenly">
+                          {calculateShow(votes[i], false) ? (
+                            <button
+                              className="bg-red-500 w-3/4 p-2 mt-2 mr-2  text-black rounded-md"
+                              onClick={() => makeVote(i, false)}
+                            >
+                              -
+                            </button>
+                          ) : (
+                            <button
+                              className="bg-red-200 w-3/4 p-2 mt-2 mr-2  text-black rounded-md cursor-not-allowed"
+                              disabled
+                            >
+                              -
+                            </button>
+                          )}
+                          {calculateShow(votes[i], true) ? (
+                            <button
+                              className="bg-green-500 w-3/4 p-2 mt-2  text-black rounded-md"
+                              onClick={() => makeVote(i, true)}
+                            >
+                              +
+                            </button>
+                          ) : (
+                            <button
+                              className=" bg-green-200 w-3/4 p-2 mt-2 text-black rounded-md cursor-not-allowed"
+                              disabled
+                            >
+                              +
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                }
+              )}
             </div>
-            {name ? (
+            {name  ? (
               loading ? (
                 <button
                   className="bg-purple-600 text-white font-bold p-3 rounded-md w-full cursor-not-allowed"

@@ -26,7 +26,7 @@ const calculateVotes = async (
 
         voters.forEach((voter) => {
             projects.forEach((project) => {
-                const votes = voter.vote_data.find((p : any) => p.title === project.title)?.votes || 0;
+                const votes = voter.vote_data.find((p : Project ) => p.title === project.title)?.votes || 0;
                 projectVotes[project.title] += Math.sqrt(votes);
                 totalVotes[project.title] += votes;
             });

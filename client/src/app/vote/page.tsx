@@ -125,7 +125,6 @@ const Page: React.FC = () => {
       router.push(
         `/success?eventId=${voterData?.getVoter?.event_uuid}&voterId=${voterId}`
       );
-      setLoading(false);
     } catch (error: any) {
       alert("Error updating vote data");
       setLoading(false);

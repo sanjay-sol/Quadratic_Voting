@@ -2,7 +2,7 @@ import voterModel from '../../models/voter.model';
 
 const updateVoteMutation = async (_: any, { id, name, votes }: { id: string; name: string; votes: number[] }) => {
   try {
-    const voter = await voterModel.findOne({ id: id });
+    const voter  = await voterModel.findOne({ id: id });
 
     if (!voter) {
       throw new Error('Voter not found');

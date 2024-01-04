@@ -2,22 +2,8 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useMutation } from "@apollo/client";
 import { CREATE_EVENT } from "../apollo/eventMutation";
 import { useRouter } from "next/navigation";
+import { EventData  } from "../types/eventData";
 
-interface Project {
-  title: string;
-}
-
-interface EventData {
-  event_title: string;
-  event_description: string;
-  attestation_uid: string;
-  num_voters: number;
-  credits_per_voter: number;
-  start_event_date: string;
-  end_event_date: string;
-created_at: string;
-  event_data: Project[];
-}
 
 const EventForm: React.FC = () => {
   const router = useRouter();
@@ -100,6 +86,8 @@ const EventForm: React.FC = () => {
       );
       setLoading(false);
     } catch (error: any) {
+      setLoading(false);
+      alert("Error creating event");
       console.error("Error creating event:", error.message);
       //TODO : Add a toast alert here
       // router.push('/error');

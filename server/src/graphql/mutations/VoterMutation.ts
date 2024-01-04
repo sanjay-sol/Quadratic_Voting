@@ -6,7 +6,7 @@ const createVoterMutation = async (_: any, { voter }: { voter: VoterInput }) => 
     return await voterModel.create({
       ...voter,
     });
-  } catch (error) {
+  } catch (error : any) {
     console.error(error);
     throw new Error('Failed to create voter');
   }

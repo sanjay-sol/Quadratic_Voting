@@ -140,7 +140,7 @@ const Page = () => {
                     className="bg-gradient-to-r from-purple-700 to-pink-700 pl-2 pt-1 pb-1 pr-2 ml-2 rounded-md"
                     onClick={() =>
                       copyToClipboard(
-                        `http://localhost:3000/vote?voterId=${voter.id}`,
+                        `${process.env.NEXT_PUBLIC_CLIENT_API}/vote?voterId=${voter.id}`,
                         index
                       )
                     }
@@ -161,8 +161,8 @@ const Page = () => {
               Download Voter Links
             </button>
           </div>
-            <div className="w-2/4">
-              <Results eventId={id} />
+          <div className="w-2/4">
+            <Results eventId={id} />
           </div>
         </div>
       )}

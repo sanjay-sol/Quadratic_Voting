@@ -79,6 +79,7 @@ const Page = () => {
       <ErrorPage message="No Event Exists with that Pair of ID and secretKey" />
     );
   }
+  console.log("voter"+voters)
   return (
     <div className="flex items-center justify-center min-h-screen">
       {eventLoading ? (
@@ -127,10 +128,10 @@ const Page = () => {
                 Share privately with the voters to vote
               </p>
             </h1>
-            <div className=" flex flex-col justify-center items-center border-2 h-64 rounded-md m-3 overflow-y-scroll">
+            <div className=" flex flex-col justify-center items-center border-2 h-auto max-h-full rounded-md m-3 ">
               {voters.map((voter: any, index) => (
                 <div
-                  className="flex justify-center scrollbar-hide items-baseline p-2 m-3"
+                  className="flex justify-center scrollbar-hide items-baseline p-2 m-1"
                   key={voter.id}
                 >
                   <p className="text-base">{`${process.env.NEXT_PUBLIC_CLIENT_API}/vote?voterId=${voter.id}`}</p>

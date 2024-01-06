@@ -2,18 +2,17 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useMutation } from "@apollo/client";
 import { CREATE_EVENT } from "../apollo/eventMutation";
 import { useRouter } from "next/navigation";
-import { EventData  } from "../types/eventData";
-
+import { EventData } from "../types/eventData";
 
 const EventForm: React.FC = () => {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const [eventData, setEventData] = useState<EventData>({
-    event_title: "",
-    event_description: "",
+    event_title: "My Event Title",
+    event_description: "My Event Description",
     attestation_uid: "",
-    num_voters: 0,
-    credits_per_voter: 0,
+    num_voters: 10,
+    credits_per_voter: 100,
     start_event_date: "",
     end_event_date: "",
     created_at: new Date().toISOString(),
@@ -95,48 +94,75 @@ const EventForm: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center ">
-      <form className="max-w-md mx-auto p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
-        <h1 className="text-2xl pl-24 font-bold text-gray-800">
-          {" "}
-          Event Details
+    <div className="flex flex-col  w-screen justify-center items-center ">
+      <div className="w-6/12 mx-auto flex flex-col justify-center items-center  p-6">
+        <h1 className="text-black font-semibold text-4xl">
+          Create a New Event
         </h1>
-        <label className="block mb-2 text-gray-900 font-medium">
-          Event Title:
+        <p className="mt-2 font-semibold text-lg text-slate-800">
+          To create an event, simply fill out the event settings, add your
+          options, and we will generate you quicklinks that you can share with
+          your audience.
+        </p>
+      </div>
+      <div className="w-6/12 mx-auto flex flex-col justify-center  p-6">
+        <h1 className="text-black font-medium text-3xl">Global Settings</h1>
+        <p className="mt-2 font-semibold text-lg text-slate-800">
+          These settings are used to setup your event. You can add an event
+          title and description, select the number of voters, how many vote
+          credits do they each receive, and a start and end date for voting.
+        </p>
+      </div>
+      <form className="w-6/12 mx-auto flex flex-col justify-center p-6">
+        <label className="block mb-2 bg-gradient-to-r from-purple-600 to-pink-700 p-4 rounded-md font-bold text-2xl text-black">
+          EVENT TITLE
+          <br />
+          <span className="block mb-2 font-semibold text-lg text-slate-200">
+            What is your event called ?
+          </span>
           <input
             type="text"
             name="event_title"
-            className="w-full p-2 mt-1 rounded-md"
+            className="w-full font-normal p-2 mt-1 rounded-md"
+            placeholder="Enter Event Title"
             value={eventData.event_title}
             onChange={handleInputChange}
           />
         </label>
-        <label className="block mb-2 text-gray-900 font-medium">
-          Event Description:
+        <label className="block mb-2 bg-gradient-to-r from-purple-600 to-pink-700 p-4 rounded-md font-bold text-2xl text-black">
+          EVENT DESCRIPTION
+          <br />
+          <span className="block mb-2 font-semibold text-lg text-slate-200">
+            Describe your event in 180 words
+          </span>
           <input
             type="text"
             name="event_description"
-            className="w-full p-2 mt-1 rounded-md"
+            className="w-full font-normal p-2 mt-1 rounded-md"
             value={eventData.event_description}
             onChange={handleInputChange}
           />
         </label>
-        <label className="block mb-2 text-gray-900 font-medium">
+        <label className="block mb-2 bg-gradient-to-r from-purple-600 to-pink-700 p-4 rounded-md font-bold text-2xl text-black">
           Attestation UID:
           <input
             type="text"
             name="attestation_uid"
-            className="w-full p-2 mt-1 rounded-md"
+            className="w-full font-normal p-2 mt-1 rounded-md"
             value={eventData.attestation_uid}
             onChange={handleInputChange}
           />
         </label>
-        <label className="block mb-2 text-gray-900 font-medium">
-          Number of Voters:
+        <label className="block mb-2 bg-gradient-to-r from-purple-600 to-pink-700 p-4 rounded-md font-bold text-2xl text-black">
+          NUMBER OF VOTERS
+          <br />
+          <span className="block mb-2 font-semibold text-lg text-slate-200">
+            How many voting links would you like to generate? (Max: 250)
+          </span>
           <input
             type="number"
             name="num_voters"
-            className="w-full p-2 mt-1 rounded-md"
+            className="w-full font-normal p-2 mt-1 rounded-md"
             value={eventData.num_voters}
             onChange={(e) =>
               setEventData({
@@ -146,12 +172,16 @@ const EventForm: React.FC = () => {
             }
           />
         </label>
-        <label className="block mb-2 text-gray-900 font-medium">
-          Credits Per Voter:
+        <label className="block mb-2 bg-gradient-to-r from-purple-600 to-pink-700 p-4 rounded-md font-bold text-2xl text-black">
+          CREDITS PER VOTER
+          <br />
+          <span className="block mb-2 font-semibold text-lg text-slate-200">
+            How many credits will each voter receive?
+          </span>
           <input
             type="number"
             name="credits_per_voter"
-            className="w-full p-2 mt-1 rounded-md"
+            className="w-full font-normal p-2 mt-1 rounded-md"
             value={eventData.credits_per_voter}
             onChange={(e) =>
               setEventData({
@@ -161,46 +191,59 @@ const EventForm: React.FC = () => {
             }
           />
         </label>
-        <label className="block mb-2 text-gray-900 font-medium">
-          Start Event Date:
+        <label className="block mb-2 bg-gradient-to-r from-purple-600 to-pink-700 p-4 rounded-md font-bold text-2xl text-black">
+          START EVENT DATE
+          <br />
+          <span className="block mb-2 font-semibold text-lg text-slate-200">
+            When would you like to begin polling?
+          </span>
           <input
             type="datetime-local"
             name="start_event_date"
-            className="w-full p-2 mt-1 rounded-md"
+            className="w-full font-normal p-2 mt-1 rounded-md"
             value={eventData.start_event_date}
             onChange={(e) =>
               setEventData({ ...eventData, start_event_date: e.target.value })
             }
           />
         </label>
-        <label className="block mb-2 text-gray-900 font-medium">
-          End Event Date:
+        <label className="block mb-2 bg-gradient-to-r from-purple-600 to-pink-700 p-4 rounded-md font-bold text-2xl text-black">
+          END EVENT DATE
+          <br />
+          <span className="block mb-2 font-semibold text-lg text-slate-200">
+            When would you like to end polling?
+          </span>
           <input
             type="datetime-local"
             name="end_event_date"
-            className="w-full p-2 mt-1 rounded-md"
+            className="w-full font-normal p-2 mt-1 rounded-md"
             value={eventData.end_event_date}
             onChange={(e) =>
               setEventData({ ...eventData, end_event_date: e.target.value })
             }
           />
         </label>
-        <label className="block mb-2 text-gray-900 font-medium">
-          Created At:
-        </label>
+        <div className=" mx-auto flex flex-col justify-center  p-6">
+          <h1 className="text-black font-medium text-3xl">Options</h1>
+          <p className="mt-2 font-semibold text-lg text-slate-800">
+            These settings enable you to add options that voters can delegate
+            their voting credits to. You can choose to add an option title,
+            description, and link.
+          </p>
+        </div>
         <div>
-          <p>--------------------------------------------</p>
-          <h3 className="text-black font-semibold underline">Options Data</h3>
+          {/* <p>--------------------------------------------</p> */}
+          <h3 className="text-black text-xl mb-2 font-semibold">Add Options</h3>
           {eventData.event_data.map((project, index) => (
             <div key={index} className="mb-2">
-              <label className="text-black">
-                Option {index + 1}:
+              <label className="block mb-2 bg-gradient-to-r from-purple-600 to-pink-700 p-4 rounded-md font-bold text-xl text-black">
+                OPTION {index + 1}:
                 <input
                   type="text"
                   value={project.title}
                   placeholder="Enter Option Title"
                   onChange={(e) => handleProjectInputChange(index, e)}
-                  className="w-full p-2 mt-1 rounded-md"
+                  className="w-full font-normal p-2 mt-1 rounded-md"
                 />
               </label>
             </div>
@@ -213,7 +256,7 @@ const EventForm: React.FC = () => {
             Add Option
           </button>
         </div>
-        <p>--------------------------------------------</p>
+        {/* <p>--------------------------------------------</p> */}
         {eventData.event_data.length > 1 ? (
           loading ? (
             <button

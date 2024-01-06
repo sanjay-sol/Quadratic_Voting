@@ -77,9 +77,9 @@ const Page: React.FC = () => {
     eventLoading,
   ]);
 
-  useEffect(() => {
-    console.log("voterData", voterData);
-  }, [voterData]);
+  // useEffect(() => {
+  //   console.log("voterData", voterData);
+  // }, [voterData]);
 
   const makeVote = (index: number, isIncrement: boolean) => {
     const tempArr = votes;
@@ -142,7 +142,6 @@ const Page: React.FC = () => {
   if (!voterData?.getVoter || voterError) {
     return <ErrorPage message="No Voter Exists with that ID!!" />;
   }
-  console.log("#########", voterData?.getVoter);
   return (
     <div className="flex flex-col justify-center items-center">
       {eventLoading || voterLoading ? (
@@ -234,7 +233,7 @@ const Page: React.FC = () => {
                 }
               )}
             </div>
-            {name  ? (
+            {name ? (
               loading ? (
                 <button
                   className="bg-purple-600 text-white font-bold p-3 rounded-md w-full cursor-not-allowed"

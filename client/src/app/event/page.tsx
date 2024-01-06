@@ -5,6 +5,7 @@ import { GET_VOTERS_QUERY } from "../../apollo/eventQuery";
 import { GET_EVENT_QUERY } from "../../apollo/getEventQuery";
 import { useQuery } from "@apollo/client";
 import ErrorPage from "../error/page";
+import Results from "@/components/Results";
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -160,7 +161,9 @@ const Page = () => {
               Download Voter Links
             </button>
           </div>
-          <p className="mt-4 text-lg">Results display here!!!!!!!!!</p>
+            <div className="w-2/4">
+              <Results eventId={id} />
+          </div>
         </div>
       )}
     </div>

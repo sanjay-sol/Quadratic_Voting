@@ -148,18 +148,17 @@ const Page: React.FC = () => {
         <p>Fetching Vote Data...</p>
       ) : (
         <>
-          <div className="flex flex-col justify-center items-center border-2 m-2  border-white w-full max-w-4xl">
-            <h1 className="p-2 text-3xl font-semibold mb-2">
-              {eventData?.getEvent?.event_title}
-            </h1>
-            <p className="p-2 text-lg font-light">
-              {eventData?.getEvent?.event_description}
-            </p>
-          </div>
-
-          <div className="w-full max-w-md mx-auto p-6 bg-gradient-to-r mb-3 from-purple-500 to-pink-500 text-white rounded-lg shadow-md">
-            <div className="flex flex-col ">
-              <label className="text-lg font-bold text-slate-800 pl-4">
+          <div className="w-full mx-auto flex flex-col justify-center items-center p-6 min-h-screen bg-gradient-to-r  from-purple-500 to-pink-500 text-white ">
+            <div className="flex flex-col  justify-center items-center border-2 m-2  border-white w-3/4 ">
+              <h1 className="p-2 text-3xl text-green-400 font-semibold mb-2">
+                {eventData?.getEvent?.event_title}
+              </h1>
+              <p className="p-2 text-lg font-light">
+                {eventData?.getEvent?.event_description}
+              </p>
+            </div>
+            <div className="flex flex-col items-center ">
+              <label className="text-xl font-bold text-slate-800 pl-4">
                 {" "}
                 Enter Your Name
               </label>
@@ -167,11 +166,7 @@ const Page: React.FC = () => {
                 className="text-black text-center w-auto p-2 m-4 rounded-md "
                 placeholder="Enter Your Name"
                 type="text"
-                value={
-                  voterData?.getVoter?.voter_name !== ""
-                    ? voterData.getVoter.voter_name
-                    : name
-                }
+                value={name}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setName(e.target.value)
                 }
@@ -236,7 +231,7 @@ const Page: React.FC = () => {
             {name ? (
               loading ? (
                 <button
-                  className="bg-purple-600 text-white font-bold p-3 rounded-md w-full cursor-not-allowed"
+                  className="bg-purple-700 text-white font-bold p-3 rounded-md w-3/12 cursor-not-allowed"
                   type="button"
                   disabled
                 >
@@ -244,7 +239,7 @@ const Page: React.FC = () => {
                 </button>
               ) : (
                 <button
-                  className="bg-purple-600 text-white font-bold p-3 rounded-md w-full"
+                  className="bg-purple-700 text-white font-bold p-3 rounded-md w-3/12"
                   type="button"
                   onClick={handleVoteSubmit}
                 >
@@ -253,7 +248,7 @@ const Page: React.FC = () => {
               )
             ) : (
               <button
-                className="bg-purple-600 text-white font-bold p-3 rounded-md w-full cursor-not-allowed"
+                className="bg-purple-700 text-white font-bold p-3 rounded-md w-3/12 cursor-not-allowed"
                 type="button"
                 disabled
               >

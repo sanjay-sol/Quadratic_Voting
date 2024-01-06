@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
           <a href="https://twitter.com/glenweyl" className="underline bg-green-400 text-gray-800 p-1 rounded-md">@glenweyl</a>
         </p>
         <p className="mb-4">
-          This voting platform made with <span className="text-pink-300">&lt;3</span> by{' '}
+          This voting platform made by{' '}
           <a href="https://github.com/sanjay-sol" className="underline bg-green-400 text-gray-800 p-1 rounded-md">@sanjay-sol</a>{' '}
         </p>
         <div className="flex justify-center gap-6 mt-4">

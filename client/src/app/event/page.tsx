@@ -117,7 +117,7 @@ const Page = () => {
               </p>
             </h1>
             <div className="flex flex-col justify-center items-center">
-              <p className="p-2 text-base">{`${process.env.NEXT_PUBLIC_CLIENT_API}/event?id=${id}&secret_key=${secret_key}`}</p>
+              <p className="mb-1 text-base">{`${process.env.NEXT_PUBLIC_CLIENT_API}/event?id=${id}&secret_key=${secret_key}`}</p>
             </div>
           </div>
           <div className="flex flex-col justify-center  border-2 p-3 border-white w-full max-w-4xl mt-4">
@@ -127,7 +127,7 @@ const Page = () => {
                 Share privately with the voters to vote
               </p>
             </h1>
-            <div className="w-full flex flex-col justify-center items-center h-64 rounded-md m-3 overflow-y-scroll">
+            <div className=" flex flex-col justify-center items-center border-2 h-64 rounded-md m-3 overflow-y-scroll">
               {voters.map((voter: any, index) => (
                 <div
                   className="flex justify-center scrollbar-hide items-baseline p-2 m-3"

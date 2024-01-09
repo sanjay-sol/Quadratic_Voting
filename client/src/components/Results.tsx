@@ -1,7 +1,6 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+
 import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { CALUCULATE_VOTES_QUERY } from "../apollo/calculateVotesQuery";
 import { useQuery } from "@apollo/client";
 import {
@@ -67,15 +66,10 @@ const Results = ({ eventId }: { eventId: any }) => {
     ],
   };
 
-  const router = useRouter();
-
-  const handleRedirect = () => {
-    router.push(`/results?eventId=${eventId}`);
-  };
   return (
     <main className="">
       <div>
-        <Radar data={data} />;
+        <Radar data={data} />
       </div>
     </main>
   );

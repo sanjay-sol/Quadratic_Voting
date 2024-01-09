@@ -14,8 +14,13 @@ const Home: React.FC = () => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 xl:gap-12">
         <button className='bg-green-300 text-black p-4 rounded-md shadow-md hover:shadow-lg'>
-          <Link href="/create">
+          <Link href="/create?isAttest=false">
             Create an Event
+          </Link>
+        </button>
+        <button className='bg-green-300 text-black p-4 rounded-md shadow-md hover:shadow-lg'>
+          <Link href="/create?isAttest=true">
+            Create an Event with Attestations
           </Link>
         </button>
         <button className='bg-violet-300 text-black p-4 rounded-md shadow-md hover:shadow-lg'>

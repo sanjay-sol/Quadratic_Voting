@@ -1,16 +1,18 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { CREATE_EVENT } from "../apollo/eventMutation";
 import { useRouter } from "next/navigation";
 import { EventData } from "../types/eventData";
+import eventAttestation from "../utils/eventAttest";
 
-const EventForm: React.FC = () => {
+const EventForm = ({ isAttest }: { isAttest: boolean }) => {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
+  const [a, setA] = useState<string>("");
   const [eventData, setEventData] = useState<EventData>({
     event_title: "Sample Event",
     event_description: "Sample Event Description",
-    attestation_uid: "",
+    attestation_uid: a,
     num_voters: 10,
     credits_per_voter: 100,
     start_event_date: "",
@@ -51,11 +53,24 @@ const EventForm: React.FC = () => {
     });
   };
 
+  useEffect(() => {
+    const attesFunction = async () => {
+      try {
+        setA("9999");
+      } catch (error) {
+        console.error("Error getting attestation value:", error);
+        setA("0x9999999999");
+      }
+    };
+
+    attesFunction();
+  }, []);
   const handleCreateEvent = async () => {
     try {
       setLoading(true);
       const startDate = new Date(eventData.start_event_date);
       const endDate = new Date(eventData.end_event_date);
+
       if (
         eventData.event_title === "" ||
         eventData.event_description === "" ||
@@ -72,6 +87,10 @@ const EventForm: React.FC = () => {
         setLoading(false);
         return alert("End date must be greater than start date");
       }
+
+      eventData.attestation_uid = a;
+      console.log("eventData.attestation_uid", eventData.attestation_uid);
+
       const { data } = await createEvent({
         variables: {
           event: eventData,
@@ -105,14 +124,6 @@ const EventForm: React.FC = () => {
           with your audience.
         </p>
       </div>
-      {/* <div className="w-6/12 mx-auto flex flex-col justify-center  p-6">
-        <h1 className="text-black font-medium text-3xl">Global Settings</h1>
-        <p className="mt-2 font-semibold text-lg text-slate-800">
-          These settings are used to setup your event. You can add an event
-          title and description, select the number of voters, how many vote
-          credits do they each receive, and a start and end date for voting.
-        </p>
-      </div> */}
       <form className="w-6/12 mx-auto flex flex-col justify-center p-6">
         <label className="block mb-2 bg-gradient-to-r from-purple-600 to-pink-700 p-4 rounded-md font-bold text-2xl text-black">
           EVENT TITLE
@@ -143,16 +154,23 @@ const EventForm: React.FC = () => {
             onChange={handleInputChange}
           />
         </label>
-        <label className="block mb-2 bg-gradient-to-r from-purple-600 to-pink-700 p-4 rounded-md font-bold text-2xl text-black">
-          Attestation UID:
-          <input
-            type="text"
-            name="attestation_uid"
-            className="w-full font-normal p-2 mt-1 rounded-md"
-            value={eventData.attestation_uid}
-            onChange={handleInputChange}
-          />
-        </label>
+        {false && (
+          <label className="block mb-2 bg-gradient-to-r from-purple-600 to-pink-700 p-4 rounded-md font-bold text-2xl text-black">
+            ATTESTATION UID
+            <br />
+            <span className="block mb-2 font-semibold text-lg text-slate-200">
+              Attestation UID
+            </span>
+            <input
+              type="text"
+              name="attestation_uid"
+              className="w-full font-normal p-2 mt-1 rounded-md"
+              value={eventData.attestation_uid}
+              onChange={handleInputChange}
+            />
+          </label>
+        )}
+
         <label className="block mb-2 bg-gradient-to-r from-purple-600 to-pink-700 p-4 rounded-md font-bold text-2xl text-black">
           NUMBER OF VOTERS
           <br />
@@ -198,7 +216,7 @@ const EventForm: React.FC = () => {
           START EVENT DATE
           <br />
           <span className="block mb-2 font-semibold text-lg text-slate-200">
-            When would you like to start polling ?
+            When would you like to start voting ?
           </span>
           <input
             type="datetime-local"
@@ -214,7 +232,7 @@ const EventForm: React.FC = () => {
           END EVENT DATE
           <br />
           <span className="block mb-2 font-semibold text-lg text-slate-200">
-            When would you like to end polling?
+            When would you like to end voting?
           </span>
           <input
             type="datetime-local"
@@ -229,13 +247,12 @@ const EventForm: React.FC = () => {
         <div className=" mx-auto flex flex-col justify-center  p-6">
           <h1 className="text-black font-medium text-3xl">Options</h1>
           <p className="mt-2 font-semibold text-lg text-slate-800">
-            These settings enable you to add options that voters can delegate
-            their voting credits to. You can choose to add an option title,
-            description, and link.
+            These configurations allow you to include choices for voters to
+            assign their voting credits to. You have the option to include a
+            title for each choice.
           </p>
         </div>
         <div>
-          {/* <p>--------------------------------------------</p> */}
           <h3 className="text-black text-xl mb-2 font-semibold">Add Options</h3>
           {eventData.event_data.map((project, index) => (
             <div key={index} className="mb-2">
